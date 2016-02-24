@@ -1,0 +1,389 @@
+---
+title: "Markdown Reports of Data Analyses -- BRFSS example"
+author: "Lianne Sheppard"
+date: "Monday, February 22, 2016"
+output: html_document
+---
+# Writing Reports in Rmarkdown
+
+---  
+---
+
+# Outline
+* Learning objectives
+* Rmarkdown basics
+* Report outline and structure  
+* Putting it all together:  BRFSS example  
+
+---
+
+# Learning objectives
+* Become familiar with Rmarkdown  
+* Understand the role of good reports in reproducible research    
+
+---  
+
+# Why am I focusing on this?
+* Just as we should always approach statistical analyses with a plan in mind, it is very helpful to have a structured approach to reporting the full scope of our analyses
+* We want to document our work to support it being reproducible
+* We should summarize our work in a fashion that is useful to all collaborators
+     * This means helping readers glean the important results from the first few pages of the report   
+
+---  
+
+# R Markdown (.Rmd) basics  
+
+Format for writing reproducible, dynamic reports with R. A core tool in literate statistical programming.
+
+Embed R code and results into slideshows, pdfs, and html documents.
+
+Allows the user to follow a simple approach -- easy to type and read.  Based on plain text with certain text features that tell R and Markdown how to treat the text. Works with any basic text editor.
+
+Easy to manage workflow in Rstudio.
+
+See the R Markdown [cheatsheet] (http://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+
+--- 
+
+## Formatting  
+
+#### Use simple typing and a few symbols to get most of whay you want:  
+
+Plain text stays the same
+
+Make use of empty lines and spaces at the end of lines to start new paragraphs or lines   
+
+
+```
+Use *italics* or _italics_ 
+and **bold** or __bold__:
+```
+
+Use *italics* or _italics_ 
+and **bold** or __bold__
+
+--------------------------
+
+```
+superscripts^2^:
+```
+superscripts^2^  
+
+---  
+
+## Headers:  
+
+```
+Use # to indicate headings, one # for every level:  
+# Header Level 1
+## Header Level 2
+### Header Level 3, etc
+
+```
+Use # to indicate headings, one # for every level:  
+
+# Header Level 1
+
+## Header Level 2
+
+### Header Level 3, etc
+
+---  
+
+## Lists:  
+```
+* Item 1  
+* Item 2  
+  * Sub-item 1 -- indent enough to indicate  
+  + Sub-item 2  -- tab or spaces 
+1. Ordered item 1  
+2. Ordered item 2 
+4. Ordered item 3 -- note the numbers you assign don't matter
+3. Ordered item 4
+```
+
+* Item 1  
+* Item 2  
+    * Sub-item 1 -- indent enough to indicate 
+    + Sub-item 2 -- tab or spaces   
+1. Ordered item 1  
+2. Ordered item 2 
+4. Ordered item 3 -- note the numbers you assign don't matter
+3. Ordered item 4
+
+---
+
+#Embed R code
+
+**Inline code** -- Surround code with back ticks and r:
+
+```
+Two plus two equals `r 2 + 2`
+```
+Two plus two equals `r 2 + 2`
+
+**Code chunks** -- Start a chunk with 3 back ticks and {r}.  End the chunk with 3 back ticks:
+
+
+```
+Sample code:
+```{r}
+dim(iris)
+```
+
+```
+
+Sample code:
+```{r}
+dim(iris)
+```
+
+Use display options (eval, echo) to tell R whether to evaluate or show code
+
+---   
+
+# Report outline  
+* Executive summary (text only; max 2 pages)
+    + Introduction
+    + Data & methods
+    + Results
+    + Conclusions
+* Full data analysis (up to 15 pages)
+* Appendix
+
+---
+
+# Let's start our Rmarkdown report
+
+1. Open Rstudio
+2. New file -- Rmarkdown
+3. Choose a title, etc **ADD**
+4. Insert some headers and section breaks:
+
+```
+---
+
+# Executive summary
+
+## Introduction
+
+## Data & methods
+
+## Results
+
+## Conclusions
+
+---
+
+# Full data analysis
+
+---
+
+# Appendix
+
+```
+
+5. Save and Knit
+
+---
+
+## What should a report contain?
+
+1. Clearly state the underlying scientific question you hope to address
+2. Include a description of the experiments or observational study design with mention of how these are expected to answer the question (_a priori_ expectations about the results)
+      * If this report is a subset of the full project, note what part of the analysis is in this report
+3. Briefly summarize the results of the analysis
+4. Describe the conclusions to be drawn from the results and next steps
+5. At the end present the full analysis
+6. Wrap up with an appendix that includes at least a few administrative details
+
+---
+
+# Executive summary
+
+Write in prose, ideally <= 2 pages.
+Should be clear to everyone on the project team.  
+
+#### Outline
+
+1. Introduction
+    * Background
+    * Rationale
+2. Data & methods
+    * Data description
+    * Statistical analysis approach
+3. Results
+4. Conclusions
+
+---
+
+# Introduction
+
+* Background and rationale:
+    * Why are we doing this?
+    * Who are we doing it for?  
+    * Why is this a reasonabl thing to try?  
+
+* Objectives
+    * What are we trying to establish?
+    * What outcomes would constitute success?
+
+---
+
+# Data & methods
+
+##### What are our data?  
+Where did our data come from? (Supply URLs as appropriate)  
+How many samples/subjects?  
+How many measurements per subject/sample?  
+What covariates are important?  
+
+##### How are we processing the data?  
+If the data will be filtered or grouped, what cutoffs will be used?  
+
+##### Describe the analysis approach.  
+What statistical tests are being used?
+What sensitivity analyses are planned?
+
+
+
+---
+
+# Results
+
+Use this section to provide an *objective summary* of the findings; interpretation goes in the conclusions section.
+
+Figures and tables can be referenced, but don't belong in the executive summary.
+
+Files produced by the analysis should be listed by name.
+
+Anticipate questions from collaborators and answer them.
+
+---
+
+# Conclusions
+
+The concluions provide the context for the results.  This is the place for interpretation in light of our objectives.
+
+For each objective, include a statement or two about how that objective has or hasn't been met.
+    * Keep reporting of objectives in the same order.
+
+This section can include a discussion of the implications of the findings.  This can address data quality issues, caveats or limitations of the approach, and possible next steps.
+
+---
+
+# Full data analysis
+
+This section should include: 
+
+* Steps for reading and preprocessing the data
+
+* Descriptive data analyses and verification that you are analyzing the dat you intend to analyze
+
+* Inferential analyses
+
+* Important figures and tables  
+
+---
+
+# Appendices
+
+Include any additional details that don't belong in the full data analysis but need to be included.
+
+Also put in some documentation about the report, updated every time the report is run:
+```
+> sessionInfo()
+> getwd()
+```
+
+---
+
+# What can we write before analyzing data? 
+
+A surprising large amount of the report can be written before the detailed analysis has begun.
+
+You can use the `eval=FALSE` option to prevent the code from being run before you are ready
+
+Circulating drafts of the introduction plus data & methods sections before the data analysis begins can be very helpful and *save time*
+
+---
+
+# Strategies for incorporating R code
+
+* Precede each block of code with a statement of the purpose of this code block
+
+* Try not to include blocks of code that are longer than 1/3 of a page.  
+
+* If a block of code processes data, include a few lines of data before and after to show how the processing worked.  (e.g., Use `head()` and `tail()`).
+
+* Write functions for blocks of code that are reused extensively.
+      * Use descriptive function names  
+      
+* Use descriptive names for datasets and variables
+     * Name data frames and matices as well as their columns (and their rows, as appropriate)
+     * Refer to your entries by name, not number
+
+
+---
+
+# Tips for clarity
+
+* Does everyone on your team have a common understanding of the goals?
+
+* Make sure it is clear what negative and positive mean in a each specific context
+
+* Think about what is inferred from each plot you show
+    * Describe what allows you to make this inference
+    * Think about what the plot would look like if there were no structure in the data  
+    
+* Make sure it is clear what each chunk of code is meant to do
+
+---
+
+# Some ideas for sanity checks
+
+* How do you know you are analyzing the data you think you are analyzing?  
+     * Have you verified the sample size is correct at each data massaging step?
+     * How do you know data have been merged correctly?
+     
+* Have you clearly described the data?  
+    * What low-dimensional summaries of the data have you plotted?  Do they make sense?
+    
+
+* What do you expect to see if the data are purely noise?
+
+---
+
+# Writing a report of a data analysis
+
+I will use the BRFSS data to guide this exercise.  You may use your own project instead if you prefer.
+
+
+INSERT some ideas and sample text
+
+Include some visualizations
+
+
+
+
+## Default additions included below.  Delete eventually  
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown 
+see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
