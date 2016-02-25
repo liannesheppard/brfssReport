@@ -127,7 +127,7 @@ Two plus two equals `r 2 + 2`
 
 <pre>
 Sample code:
-```{r}
+```&#123;r&#125;
 dim(iris)
 ```
 </pre>
