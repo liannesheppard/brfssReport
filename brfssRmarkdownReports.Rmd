@@ -124,7 +124,6 @@ Two plus two equals `r 2 + 2`
 
 **Code chunks** -- Start a chunk with 3 back ticks and {r}.  End the chunk with 3 back ticks:
 
-
 <pre>
 Sample code:
 ```&#123;r&#125;
@@ -384,3 +383,8 @@ plot(cars)
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 15940c1c80ab254bd6febf2d8c1dcd6ba854457d
