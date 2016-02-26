@@ -115,6 +115,7 @@ sleepers %>% transform(
               right=FALSE, include.lowest=TRUE)) %>% 
     group_by(group) %>% 
     summarize_each(funs(sum), HealthySleepers, Respondents) %>% 
+    rename(AgeGroup = group) %>%
     mutate(CrudePrevalence=HealthySleepers/Respondents)
 
 # Download the BRFSS data for 2014 from the CDC as a zipped SAS file.
