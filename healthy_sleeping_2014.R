@@ -109,6 +109,13 @@ str(sleepers)
 # View first and last rows.
 sleepers
 
+# View the healthy sleepers and respondents by age group and crude prevalence.
+sleepers %>% transform(
+    group=cut(Age, breaks=c(18,25,35,45,65,Inf), 
+              right=FALSE, include.lowest=TRUE)) %>% 
+    group_by(group) %>% 
+    summarize_each(funs(sum), HealthySleepers, Respondents) %>% 
+    mutate(CrudePrevalence=HealthySleepers/Respondents)
 
 # Download the BRFSS data for 2014 from the CDC as a zipped SAS file.
 codebkurl <- 'http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf'
