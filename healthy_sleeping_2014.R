@@ -28,7 +28,7 @@
 # resources required. This script will get a zipped, SAS data file from the 
 # CDC and extract and import it. It will also get the codebook for this dataset
 # from the CDC as a PDF and extract states and their codes from it. Lastly, 
-# 2000 US Standard Population figures for ages 0-99 will be extract from an
+# 2000 US Standard Population figures for ages 0-99 will be extracted from an
 # NIH webpage. Subsequent execution of this script will used cached files.
 
 # Clear the workspace.
