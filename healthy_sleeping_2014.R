@@ -6,6 +6,9 @@
 # License: GNU GPL v3 http://www.gnu.org/licenses/gpl.txt
 # ----------------------------------------------------------------------------
 #
+# Tested to work on Windows 10, OSX Yosimite, and Ubuntu 14.04 LTS.
+# Requires "pdftotext". See: http://www.foolabs.com/xpdf/download.html 
+#
 # Data source: http://www.cdc.gov/brfss/annual_data/annual_2014.html
 #
 # This is an effort to reproduce the choropleth map in this paper:
