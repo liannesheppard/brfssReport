@@ -1,9 +1,10 @@
+# ----------------------------------------------------------------------------
 # Create a choropleth map for US states by prevalance of healthy sleeping 
 # duration (>= 7 hs per 24 hour day) for adults in 2014 using CDC BRFSS data.
 #
-# Copyright: Brian High
-# License: GNU GENERAL PUBLIC LICENSE, Version 3
-#          http://www.gnu.org/licenses/gpl-3.0.html
+# Copyright: Brian High (https://github.com/brianhigh)
+# License: GNU GPL v3 http://www.gnu.org/licenses/gpl.txt
+# ----------------------------------------------------------------------------
 #
 # Data source: http://www.cdc.gov/brfss/annual_data/annual_2014.html
 #
@@ -126,6 +127,9 @@ if (! file.exists(codebkfile)) {
 }
 
 # Parse the codebook to get the state names and their codes.
+# Note: readPDF() requires that you have pdftotext installed somewhere on your 
+#       system in your PATH so that R will be able to execute it. You may find
+#       pdftotext at: http://www.foolabs.com/xpdf/download.html
 statesfile <- 'data/states_list.csv'
 if (! file.exists(statesfile)) {
     
@@ -134,10 +138,10 @@ if (! file.exists(statesfile)) {
         uri = codebkfile), language = "en", id = "id1")
     
     # Read the content into a vector of strings.
-    states.raw <- content(pdf)[21:89]
+    states.raw <- content(pdf)[19:89]
     
     # Filter out the lines which do not contain states and their codes.
-    states.str <- states.raw[grepl("^\\s{5,6}\\d{1,}\\s+", states.raw)]
+    states.str <- states.raw[grepl("^\\s{2,6}\\d{1,}\\s+", states.raw)]
     
     # Parse the lines to get codes and state names into CSV format.
     states.csv <- gsub("^\\s+(\\d{1,2})\\s+(\\w+(?:\\s\\w+){,2}).*$", 
