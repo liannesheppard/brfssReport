@@ -6,6 +6,9 @@
 # License: GNU GPL v3 http://www.gnu.org/licenses/gpl.txt
 # ----------------------------------------------------------------------------
 #
+# Tested to work on Windows 10, OSX Yosimite, and Ubuntu 14.04 LTS.
+# Requires "pdftotext". See: http://www.foolabs.com/xpdf/download.html 
+#
 # Data source: http://www.cdc.gov/brfss/annual_data/annual_2014.html
 #
 # This is an effort to reproduce the choropleth map in this paper:
@@ -124,7 +127,7 @@ sleepers
 
 # View the healthy sleepers and respondents by age group and crude prevalence.
 sleepers %>% transform(
-    group=cut(Age, breaks=c(18,25,35,45,65,Inf), 
+    group=cut(Age, breaks=c(18, 25, 35, 45, 65, Inf), 
               right=FALSE, include.lowest=TRUE)) %>% 
     group_by(group) %>% 
     summarize_each(funs(sum), HealthySleepers, Respondents) %>% 
@@ -146,10 +149,10 @@ statesfile <- 'data/states_list.csv'
 if (! file.exists(statesfile)) {
     
     # Read PDF into a list.
-    pdf <- readPDF(control = list(text = "-layout"))(elem = list(
-        uri = codebkfile), language = "en", id = "id1")
+    pdf <- readPDF(control = list(text="-layout"))(elem=list(
+        uri=codebkfile), language="en", id="id1")
     
-    # Read the content into a vector of strings.
+    # Read the content into a vector of strings. (Adjust index as needed.)
     states.raw <- content(pdf)[19:89]
     
     # Filter out the lines which do not contain states and their codes.
@@ -176,7 +179,7 @@ if (! file.exists(agesfile)) {
     # Scrape a table from an NIH web page and save as CSV for later.
     agesurl <- 'http://seer.cancer.gov/stdpopulations/stdpop.singleages.html'
     agestbl <- readHTMLTable(agesurl)
-    ages <- agestbl[[1]][2:102, c(1,2)]
+    ages <- agestbl[[1]][2:102, c(1, 2)]
     row.names(ages) <- NULL
     names(ages) <- c("Age", "StdPop")
     ages$Age <- factor(as.numeric(
