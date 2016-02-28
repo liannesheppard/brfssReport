@@ -262,9 +262,8 @@ choro$show_labels <- FALSE
 #    values=colorRampPalette(brewer.pal(5, "Blues"))(5),
 #    guide=guide_legend(reverse=TRUE))
 
-# Render the map and print it to the screen.
+# Render the map.
 us.sleep.map <- choro$render()
-print(us.sleep.map)
 
 # Save map as a PNG file.
 ggsave(filename="healthy_sleepers_by_state_2014.png", plot=us.sleep.map)
