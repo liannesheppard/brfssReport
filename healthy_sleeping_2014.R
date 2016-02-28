@@ -47,59 +47,71 @@ for (pkg in c("foreign", "data.table", "dplyr", "tm", "XML", "epitools",
 datadir <- "data"
 dir.create(file.path(datadir), showWarnings=FALSE, recursive=TRUE)
 
-# Download the BRFSS data for 2014 from the CDC as a zipped SAS file.
-dataurl <- 'http://www.cdc.gov/brfss/annual_data/2014/files/LLCP2014XPT.ZIP'
-datafile <- 'data/LLCP2014XPT.ZIP'
-if (! file.exists(datafile)) {
-    download.file(dataurl, datafile, mode='wb')
-}
-
-# Extract the SAS data file from the zip file.
-sasfile <- 'data/LLCP2014.XPT'
-if (! file.exists(sasfile)) {
-    unzip(datafile, exdir='data')
-    # Remove the space character at the end of filename if necessary.
-    # This was found to be an issue in the 2014 BRFSS SAS data file.
-    if (file.exists(paste(sasfile, " ", sep=""))) {
-        file.rename(from=paste(sasfile, " ", sep=""), to=sasfile)
+# Use cached data files, if present, or download and extract as needed.
+allsleepersfile <- 'data/state_age_sleep_2014.csv'
+if (! file.exists(allsleepersfile)) {
+    # Download the BRFSS data for 2014 from the CDC as a zipped SAS file.
+    dataurl <- 'http://www.cdc.gov/brfss/annual_data/2014/files/LLCP2014XPT.ZIP'
+    datafile <- 'data/LLCP2014XPT.ZIP'
+    if (! file.exists(datafile)) {
+        download.file(dataurl, datafile, mode='wb')
     }
+    
+    # Extract the SAS data file from the zip file.
+    sasfile <- 'data/LLCP2014.XPT'
+    if (! file.exists(sasfile)) {
+        unzip(datafile, exdir='data')
+        # Remove the space character at the end of filename if necessary.
+        # This was found to be an issue in the 2014 BRFSS SAS data file.
+        if (file.exists(paste(sasfile, " ", sep=""))) {
+            file.rename(from=paste(sasfile, " ", sep=""), to=sasfile)
+        }
+    }
+    
+    # Import SAS file. Use data.table for improved performance over data.frame.
+    # Note:  For SAS variables that start with the underscore character, R will 
+    # put an X at the beginning of the variable name as the data is imported.
+    brfss <- as.data.table(read.xport(sasfile))
+    
+    # Subset by the data we need to create the choropleth and export to CSV.
+    all.sleepers <- brfss[, list(X_STATE, X_AGE80, SLEPTIM1)]
+    write.csv(all.sleepers, allsleepersfile, row.names=FALSE)
+    
+    # Close brfss data.table to conserve memory.
+    rm(brfss)
+} else {
+    # Read the CSV into a data.table.
+    all.sleepers <- as.data.table(read.csv(allsleepersfile, header=TRUE))
 }
 
-# Import SAS file. Use data.table for improved performance over data.frame.
-# Note:  For SAS variables that start with the underscore character, R will 
-# put an X at the beginning of the variable name as the data is imported.
-brfss <- as.data.table(read.xport(sasfile))
-
-# Order by state and age (imputed).
-brfss <- brfss[order(X_STATE, X_AGE80)]
-
-# Get some information about the dataset.
-class(brfss)
-dim(brfss)
+# Check the number of rows in the dataset. The BRFSS 2014 Survey Data page
+# (http://www.cdc.gov/brfss/annual_data/annual_2014.html), under "Data Files"
+# states, "There are 464,664 records for 2014."
+nrow(all.sleepers)
 
 # Count respondents who reported hours of sleep per day.
 # Check that this is the same value as reported in the CDC codebook, page 14.
 # http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf
 # Codebook reports: 458172 ("Number of hours [1-24]", "Frequency")
-brfss[SLEPTIM1 <= 24, .N] 
+all.sleepers[SLEPTIM1 <= 24, .N] 
 
 # Count respondents who get at least 7 hours of sleep per day.
 # Check that this is the same value as reported in the article, TABLE 1.
 # http://www.cdc.gov/mmwr/volumes/65/wr/mm6506a1.htm
 # Article reports: 444306 ("Total", "No.")
-brfss[SLEPTIM1 >= 7 & SLEPTIM1 <= 24, .N] 
+all.sleepers[SLEPTIM1 >= 7 & SLEPTIM1 <= 24, .N] 
+
+# Order by state and age (imputed).
+all.sleepers <- all.sleepers[order(X_STATE, X_AGE80)]
 
 # Exctract the sleeping health (SLEPTIM1), excluding Guam (X_STATE == 66) and 
 # Puerto Rico (X_STATE == 72), count respondents, and sum respondents who sleep
 # at least 7 hours a day (SLEPTIM1 >= 7 & SLEPTIM1 <= 24) by state and age.
-sleepers <- brfss[X_AGE80 >= 18 & X_STATE != 66 & X_STATE != 72, 
+sleepers <- all.sleepers[X_AGE80 >= 18 & X_STATE != 66 & X_STATE != 72, 
                   list(Respondents = .N,
                        HealthySleepers = sum(SLEPTIM1 >= 7 & SLEPTIM1 <= 24, 
                                              na.rm = TRUE)),
                   by = list(X_STATE, X_AGE80)]
-
-# Close brfss data.table to conserve memory.
-rm(brfss)
 
 # Rename variables.
 names(sleepers) <- c("StateNum", "Age", "Respondents", "HealthySleepers")
@@ -153,7 +165,7 @@ if (! file.exists(statesfile)) {
     write.csv(states, statesfile, row.names=FALSE)
     
 } else {
-    # Read in states list and add column names.
+    # Read the CSV into a data.frame.
     states <- read.csv(statesfile, header=TRUE)
 }
 
@@ -172,10 +184,10 @@ if (! file.exists(agesfile)) {
     ages$StdPop <- as.numeric(
         sapply(ages$StdPop, function (x) gsub(",", "", x)))
     write.csv(ages, agesfile, row.names=FALSE)
+} else {
+    # Read the CSV into a data.frame.
+    ages <- read.csv(agesfile, header=TRUE)
 }
-
-# Read data from CSV
-ages <- read.csv(agesfile, header=TRUE)
 
 # Merge with "sleepers" with "ages" to get standard population.
 sleepers.pop <- merge(sleepers, ages, by="Age")
