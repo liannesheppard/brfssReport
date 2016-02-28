@@ -234,6 +234,8 @@ states <- mutate(states, region=tolower(State))
 merge(states, sleep.state.adj) %>% select(region, value) -> map.values
 
 # View the first and last few rows and a summary.
+# Compare with the values in the State and % columns of TABLE 2 from
+# the article: http://www.cdc.gov/mmwr/volumes/65/wr/mm6506a1.htm
 head(map.values)
 tail(map.values)
 summary(map.values)
