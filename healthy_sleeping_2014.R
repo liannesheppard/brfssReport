@@ -6,7 +6,7 @@
 # License: GNU GPL v3 http://www.gnu.org/licenses/gpl.txt
 # ----------------------------------------------------------------------------
 #
-# Tested to work on Windows 10, OSX Yosimite, and Ubuntu 14.04 LTS.
+# Tested to work on Windows 10, OS X Yosemite, and Ubuntu 14.04 LTS.
 # Requires "pdftotext". See: http://www.foolabs.com/xpdf/download.html 
 #
 # Data source: http://www.cdc.gov/brfss/annual_data/annual_2014.html
@@ -184,14 +184,14 @@ if (! file.exists(agesfile)) {
     ages <- agestbl[[1]][2:102, c(1, 2)]
     row.names(ages) <- NULL
     names(ages) <- c("Age", "StdPop")
-    ages$Age <- factor(as.numeric(
-        sapply(ages$Age, function (x) gsub("[+]? years$", "", x))))
+    ages$Age <- as.numeric(
+        sapply(ages$Age, function (x) gsub("[+]? years$", "", x)))
     ages$StdPop <- as.numeric(
         sapply(ages$StdPop, function (x) gsub(",", "", x)))
     write.csv(ages, agesfile, row.names=FALSE)
 } else {
     # Read the CSV into a data.frame.
-    ages <- read.csv(agesfile, header=TRUE)
+    ages <- read.csv(agesfile, header=TRUE, stringsAsFactors=FALSE)
 }
 
 # Merge with "sleepers" with "ages" to get standard population.
