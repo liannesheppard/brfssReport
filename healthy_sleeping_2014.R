@@ -14,13 +14,13 @@
 # This is an effort to reproduce the choropleth map in this paper:
 #
 # Liu Y, Wheaton AG, Chapman DP, Cunningham TJ, Lu H, Croft JB. Prevalence of 
-# Healthy Sleep Duration among Adults — United States, 2014. MMWR Morb Mortal 
-# Wkly Rep 2016;65:137–141. DOI: http://dx.doi.org/10.15585/mmwr.mm6506a1.
+# Healthy Sleep Duration among Adults -- United States, 2014. MMWR Morb Mortal 
+# Wkly Rep 2016;65:137-141. DOI: http://dx.doi.org/10.15585/mmwr.mm6506a1.
 #
 # The figure to reproduce is titled:
 #
-# FIGURE. Age-adjusted percentage of adults who reported ≥7 hours of sleep 
-# per 24-hour period, by state — Behavioral Risk Factor Surveillance System, 
+# FIGURE. Age-adjusted percentage of adults who reported >=7 hours of sleep 
+# per 24-hour period, by state -- Behavioral Risk Factor Surveillance System, 
 # United States, 2014
 #
 # For maximum reproducibility and portability, data will be downloaded from
@@ -31,13 +31,17 @@
 # 2000 US Standard Population figures for ages 0-99 will be extracted from an
 # NIH webpage. Subsequent execution of this script will used cached files.
 
-# Clear the workspace.
-closeAllConnections()
-rm(list=ls())
+# Clear the workspace, unless you are running in knitr context.
+# See: https://support.rstudio.com/hc/en-us/articles/200552276
+# Example: rmarkdown::render("healthy_sleeping_2014.R", "pdf_document")
+if (! isTRUE(getOption('knitr.in.progress'))) {
+    closeAllConnections()
+    rm(list=ls())
+}
 
 # Install packages (if necessary).
 for (pkg in c("foreign", "data.table", "dplyr", "tm", "XML", "epitools", 
-              "choroplethrMaps", "choroplethr", "ggplot2")) {
+              "choroplethrMaps", "choroplethr", "RColorBrewer", "ggplot2")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -235,14 +239,35 @@ tail(map.values)
 summary(map.values)
 
 # Make the choropleth map with choroplethr, using 5 age-ranges.
-plot.title <- paste("Age-adjusted percentage of adults who reported", "\n", 
-                    "≥7 hours of sleep per 24-hour period, by state", "\n", 
-                    "— Behavioral Risk Factor Surveillance System,", "\n",
-                    "United States, 2014")
-state.plot <- state_choropleth(map.values, num_colors=5, title=plot.title)
+choro <- StateChoropleth$new(map.values)
+choro$set_num_colors(5)
+
+# Use the figure title from the article as the title of the map.
+choro$title <- paste(
+    "Age-adjusted percentage of adults who reported", "\n", 
+    "at least 7 hours of sleep per 24-hour period, by state", "\n", 
+    "-- Behavioral Risk Factor Surveillance System,", "\n",
+    "United States, 2014")
+
+# By default, the map labels states with values from the "region" variable.
+# Remove the state labels to match the original map from the article.
+choro$show_labels <- FALSE
+
+# By default, we get a blue color palette, and the legend has value groups  
+# ordered from low to high. The map in the article uses the reverse order.
+# Reverse the order of the levels in the legend to match the original map.
+# This method requires us to reset the color palette to match the original.
+# NOTE: This causes Alaska to get the wrong color, so don't run this code. 
+#choro$ggplot_scale <- scale_fill_manual("",
+#    values=colorRampPalette(brewer.pal(5, "Blues"))(5),
+#    guide=guide_legend(reverse=TRUE))
+
+# Render the map and print it to the screen.
+us.sleep.map <- choro$render()
+print(us.sleep.map)
 
 # Save map as a PNG file.
-ggsave(filename="healthy_sleepers_by_state_2014.png", plot=state.plot)
+ggsave(filename="healthy_sleepers_by_state_2014.png", plot=us.sleep.map)
 
 # Display the map.
-print(state.plot)
+print(us.sleep.map)
