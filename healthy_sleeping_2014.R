@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------------------
 # Create a choropleth map for US states by prevalance of healthy sleeping 
-# duration (>= 7 hs per 24 hour day) for adults in 2014 using CDC BRFSS data.
+# duration (>= 7 hrs per 24 hour day) for adults in 2014 using CDC BRFSS data.
 #
 # Copyright: Brian High (https://github.com/brianhigh)
 # License: GNU GPL v3 http://www.gnu.org/licenses/gpl.txt
@@ -29,7 +29,7 @@
 # CDC and extract and import it. It will also get the codebook for this dataset
 # from the CDC as a PDF and extract states and their codes from it. Lastly, 
 # 2000 US Standard Population figures for ages 0-99 will be extracted from an
-# NIH webpage. Subsequent execution of this script will used cached files.
+# NIH webpage. Repeated execution of this script will used cached files.
 
 # Clear the workspace, unless you are running in knitr context.
 # See: https://support.rstudio.com/hc/en-us/articles/200552276
