@@ -51,6 +51,8 @@ datadir <- "data"
 dir.create(file.path(datadir), showWarnings=FALSE, recursive=TRUE)
 
 # Use cached data files, if present, or download and extract as needed.
+# Note: If you want the script to get all the data directly from the sources
+#       on the web, just delete the "data" folder before running this script.
 allsleepersfile <- 'data/state_age_sleep_2014.csv'
 if (! file.exists(allsleepersfile)) {
     # Download the BRFSS data for 2014 from the CDC as a zipped SAS file.
