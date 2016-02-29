@@ -43,9 +43,13 @@ if (! isTRUE(getOption('knitr.in.progress'))) {
     rm(list=ls())
 }
 
+# Create a vector of package names for the packages we will need.
+pkgs <- c("foreign", "data.table", "dplyr", "tm", "XML", 
+          "epitools", "choroplethrMaps", "choroplethr", 
+          "RColorBrewer", "ggplot2", "grid", "gridExtra")
+
 # Install packages (if necessary).
-for (pkg in c("foreign", "data.table", "dplyr", "tm", "XML", "epitools", 
-              "choroplethrMaps", "choroplethr", "RColorBrewer", "ggplot2")) {
+for (pkg in pkgs) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -292,13 +296,6 @@ summary(map.values)
 choro <- StateChoropleth$new(map.values)
 choro$set_num_colors(5)
 
-# Use the figure title from the article as the title of the map.
-choro$title <- paste(
-    "Age-adjusted percentage of adults who reported", "\n", 
-    "at least 7 hours of sleep per 24-hour period, by state", "\n", 
-    "-- Behavioral Risk Factor Surveillance System,", "\n",
-    "United States, 2014")
-
 # By default, the map labels states with values from the "region" variable.
 # Remove the state labels to match the original map from the article.
 choro$show_labels <- FALSE
@@ -312,11 +309,27 @@ choro$show_labels <- FALSE
 #    values=colorRampPalette(brewer.pal(5, "Blues"))(5),
 #    guide=guide_legend(reverse=TRUE))
 
-# Render the map.
+# Render and display the map.
 us.sleep.map <- choro$render()
+print(us.sleep.map)
+
+# ---------------------------------------------------------------------------
+# Save the map as a PNG file with title and data source credit (as footer)
+# ---------------------------------------------------------------------------
+
+# Define plot title and data source (footer).
+plot.title <- paste(
+    "Age-adjusted percentage of adults who reported", "\n", 
+    "at least 7 hours of sleep per 24-hour period, by state")
+data.src <- "Behavioral Risk Factor Surveillance System, United States, 2014"
+
+# Layout the figure with source attribution string at bottom of plot area.
+gmap <- arrangeGrob(us.sleep.map, 
+                    top=textGrob(plot.title, x=0, hjust=-0.1, vjust=1, 
+                                 gp=gpar(fontface="plain", fontsize=12)),
+                    bottom=textGrob(data.src, x=0, hjust=-.2, vjust=0.3, 
+                                   gp=gpar(fontface="italic", fontsize=8)))
 
 # Save map as a PNG file.
-ggsave(filename="healthy_sleepers_by_state_2014.png", plot=us.sleep.map)
-
-# Display the map.
-print(us.sleep.map)
+ggsave(filename="healthy_sleepers_by_state_2014.png", 
+       plot=gmap, width=6, height=3.5)
