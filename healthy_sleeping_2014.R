@@ -3,7 +3,8 @@
 # duration (>= 7 hrs per 24 hour day) for adults in 2014 using CDC BRFSS data.
 #
 # Copyright: Brian High (https://github.com/brianhigh)
-# License: GNU GPL v3 http://www.gnu.org/licenses/gpl.txt
+# License: GNU GPL v3, CC BY-SA 4.0 International, or GNU GFDL v1.3
+#          You may choose any one of these, or higher versions thereof.
 # ----------------------------------------------------------------------------
 #
 # Tested to work on Windows 10, OS X Yosemite, and Ubuntu 14.04 LTS.
