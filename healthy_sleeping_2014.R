@@ -46,7 +46,7 @@ if (! isTRUE(getOption('knitr.in.progress'))) {
 
 # Create a vector of package names for the packages we will need.
 pkgs <- c("foreign", "data.table", "dplyr", "tm", "XML", 
-          "epitools", "choroplethrMaps", "choroplethr", 
+          "epitools", "Hmisc", "choroplethrMaps", "choroplethr", 
           "RColorBrewer", "ggplot2", "grid", "gridExtra")
 
 # Install packages (if necessary).
@@ -299,6 +299,16 @@ merge(states, sleep.state.adj) %>% select(region, value) -> map.values
 head(map.values)
 tail(map.values)
 summary(map.values)
+
+# List the groups that will be used in the 5-color choropleth map.
+map.values[order(map.values$value),] %>% 
+    mutate(group=cut2(value, g=5)) %>% group_by(group) %>% 
+    dplyr::summarize(regions=n(), mean_value=round(mean(value), 1))
+
+# D.C. will be too small on the map to see. Find it's group and print as text.
+map.values %>% transform(group=cut2(value, g=5)) %>% 
+    filter(region == "district of columbia")
+
 
 # :----------------------------------------------------------------------------:
 # Create choropleth map
