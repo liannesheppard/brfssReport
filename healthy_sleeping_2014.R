@@ -276,7 +276,7 @@ sleepers.adj %>% mutate(value=adj.rate*100) %>%
     select(StateNum, value) -> sleep.state.adj
 
 # ---------------------------------------------------------------------------
-# Create choropleth map
+# Prepare map values data frame and look it over before plotting
 # ---------------------------------------------------------------------------
 
 # Prepare states data.frame for use with cloroplethr by adding "region" column.
@@ -291,6 +291,10 @@ merge(states, sleep.state.adj) %>% select(region, value) -> map.values
 head(map.values)
 tail(map.values)
 summary(map.values)
+
+# ---------------------------------------------------------------------------
+# Create choropleth map
+# ---------------------------------------------------------------------------
 
 # Make the choropleth map with choroplethr, using 5 age-ranges.
 choro <- StateChoropleth$new(map.values)
@@ -325,11 +329,12 @@ data.src <- "Behavioral Risk Factor Surveillance System, United States, 2014"
 
 # Layout the figure with source attribution string at bottom of plot area.
 gmap <- arrangeGrob(us.sleep.map, 
-                    top=textGrob(plot.title, x=0, hjust=-0.1, vjust=1, 
+                    top=textGrob(plot.title, x=0, hjust=-.07, vjust=1, 
                                  gp=gpar(fontface="plain", fontsize=12)),
-                    bottom=textGrob(data.src, x=0, hjust=-.2, vjust=0.3, 
+                    bottom=textGrob(data.src, x=0, hjust=-.2, vjust=.5, 
                                    gp=gpar(fontface="italic", fontsize=8)))
 
 # Save map as a PNG file.
-ggsave(filename="healthy_sleepers_by_state_2014.png", 
-       plot=gmap, width=6, height=3.5)
+ggsave(filename='healthy_sleepers_by_state_2014.png', 
+       plot=gmap, width=6, height=3.6, units='in')
+
