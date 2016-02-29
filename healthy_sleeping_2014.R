@@ -142,7 +142,14 @@ num.resp
 # duration [>=7 hours]." NOTE: Our calculation here is just a crude prevalence.
 all.sleepers[SLEPTIM1 >= 7 & X_AGE80 >= 18, 100*.N/num.resp]
 
-# Sanity checks show respondent counts match BRFSS website but not the paper.
+# Sanity checks show respondent counts match BRFSS products but not the paper.
+#
+# Perhaps the discrepancy is due to a difference in software. The authors claim:
+#
+#   "Statistical software programs that account for the complex sampling design 
+#    of the BRFSS were used for the analysis."
+#
+# Or maybe a different survey variable was used for respondent age.
 
 # ---------------------------------------------------------------------------
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
