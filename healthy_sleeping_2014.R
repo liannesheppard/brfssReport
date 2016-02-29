@@ -31,6 +31,10 @@
 # 2000 US Standard Population figures for ages 0-99 will be extracted from an
 # NIH webpage. Repeated execution of this script will used cached files.
 
+# ---------------------------------------------------------------------------
+# Clear workspace and load packages
+# ---------------------------------------------------------------------------
+
 # Clear the workspace, unless you are running in knitr context.
 # See: https://support.rstudio.com/hc/en-us/articles/200552276
 # Example: rmarkdown::render("healthy_sleeping_2014.R", "pdf_document")
@@ -53,6 +57,10 @@ for (pkg in c("foreign", "data.table", "dplyr", "tm", "XML", "epitools",
 # Create the data folder if it does not already exist.
 datadir <- "data"
 dir.create(file.path(datadir), showWarnings=FALSE, recursive=TRUE)
+
+# ---------------------------------------------------------------------------
+# Get the data
+# ---------------------------------------------------------------------------
 
 # Use cached data files, if present, or download and extract as needed.
 # Note: If you want the script to get all the data directly from the sources
@@ -93,34 +101,56 @@ if (! file.exists(allsleepersfile)) {
     all.sleepers <- as.data.table(read.csv(allsleepersfile, header=TRUE))
 }
 
+# ---------------------------------------------------------------------------
+# Perform sanity checks and subsetting
+# ---------------------------------------------------------------------------
+
 # Check the number of rows in the dataset. The BRFSS 2014 Survey Data page
 # (http://www.cdc.gov/brfss/annual_data/annual_2014.html), under "Data Files"
 # states, "There are 464,664 records for 2014."
 nrow(all.sleepers)
 
+# Subset the data.table for only those repondents which reported sleep time.
+# In other words, exclude "Don't know/Not Sure" and "Refused".
+all.sleepers <- all.sleepers[SLEPTIM1 <= 24, ]
+
 # Count respondents who reported hours of sleep per day.
 # Check that this is the same value as reported in the CDC codebook, page 14.
 # http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf
 # Codebook reports: 458172 ("Number of hours [1-24]", "Frequency")
-all.sleepers[SLEPTIM1 <= 24, .N] 
+nrow(all.sleepers)
 
-# Count respondents who get at least 7 hours of sleep per day.
-# Check that this is the same value as reported in the article, TABLE 1.
-# http://www.cdc.gov/mmwr/volumes/65/wr/mm6506a1.htm
-# Article reports: 444306 ("Total", "No.")
-all.sleepers[SLEPTIM1 >= 7 & SLEPTIM1 <= 24, .N] 
+# Subset the data.table for only those respondents in the 50 states and DC.
+# In other words, exclude Guam (X_STATE == 66) and Puerto Rico (X_STATE == 72). 
+all.sleepers <- all.sleepers[X_STATE != 66 & X_STATE != 72, ]
 
-# Order by state and age (imputed).
-all.sleepers <- all.sleepers[order(X_STATE, X_AGE80)]
+# Count adult respondents in the 50 states and District of Columbia.
+# The authors of the paper write, "CDC analyzed data from the 2014 Behavioral 
+# Risk Factor Surveillance System (BRFSS) to determine the prevalence of a 
+# healthy sleep duration (>=7 hours) among 444,306 adult respondents in all 
+# 50 states and the District of Columbia."
+num.resp <- all.sleepers[X_AGE80 >= 18, .N]
+num.resp
 
-# Exctract the sleeping health (SLEPTIM1), excluding Guam (X_STATE == 66) and 
-# Puerto Rico (X_STATE == 72), count respondents, and sum respondents who sleep
-# at least 7 hours a day (SLEPTIM1 >= 7 & SLEPTIM1 <= 24) by state and age.
-sleepers <- all.sleepers[X_AGE80 >= 18 & X_STATE != 66 & X_STATE != 72, 
-                  list(Respondents = .N,
-                       HealthySleepers = sum(SLEPTIM1 >= 7 & SLEPTIM1 <= 24, 
-                                             na.rm = TRUE)),
-                  by = list(X_STATE, X_AGE80)]
+# Percent of these respondents who sleep at least 7 hours per 24-hour day.
+# The authors say, "A total of 65.2% of respondents reported a healthy sleep 
+# duration [>=7 hours]." NOTE: Our calculation here is just a crude prevalence.
+all.sleepers[SLEPTIM1 >= 7 & X_AGE80 >= 18, 100*.N/num.resp]
+
+# Sanity checks show respondent counts match BRFSS website but not the paper.
+
+# ---------------------------------------------------------------------------
+# Aggregate by state and age to get counts and prevalence of healthy sleepers
+# ---------------------------------------------------------------------------
+
+# Exctract the sleeping health (SLEPTIM1), count total respondents and also the 
+# respondents who sleep at least 7 hours a day (SLEPTIM1 >= 7) by state and age.
+sleepers <- all.sleepers[X_AGE80 >= 18, list(Respondents=.N,
+                       HealthySleepers = sum(SLEPTIM1 >= 7, na.rm = TRUE)),
+                       by=list(X_STATE, X_AGE80)]
+
+# Order by state and age.
+sleepers <- sleepers[order(X_STATE, X_AGE80)]
 
 # Rename variables.
 names(sleepers) <- c("StateNum", "Age", "Respondents", "HealthySleepers")
@@ -140,7 +170,12 @@ sleepers %>% transform(
     rename(AgeGroup = group) %>%
     mutate(CrudePrevalence=HealthySleepers/Respondents)
 
-# Download the BRFSS data for 2014 from the CDC as a zipped SAS file.
+
+# ---------------------------------------------------------------------------
+# Get state names to match up with the state codes in the BRFSS dataset
+# ---------------------------------------------------------------------------
+
+# Download the BRFSS codebook for 2014 from the CDC as a PDF file.
 codebkurl <- 'http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf'
 codebkfile <- 'data/codebook14_llcp.pdf'
 if (! file.exists(codebkfile)) {
@@ -178,6 +213,10 @@ if (! file.exists(statesfile)) {
     states <- read.csv(statesfile, header=TRUE)
 }
 
+# ---------------------------------------------------------------------------
+# Get US standard population totals by single ages to use for age-adjustment
+# ---------------------------------------------------------------------------
+
 # Get the 2000 US Standard Population (Census P25-1130), Single Ages to 99,
 # to be used for age-adjustment. http://wonder.cdc.gov/wonder/help/faq.html#6
 agesfile <- 'data/ages.csv'
@@ -197,6 +236,11 @@ if (! file.exists(agesfile)) {
     # Read the CSV into a data.frame.
     ages <- read.csv(agesfile, header=TRUE, stringsAsFactors=FALSE)
 }
+
+
+# ---------------------------------------------------------------------------
+# Calculate age-adjusted prevalence of healthy sleep duration by state
+# ---------------------------------------------------------------------------
 
 # Merge with "sleepers" with "ages" to get standard population.
 sleepers.pop <- merge(sleepers, ages, by="Age")
@@ -226,6 +270,10 @@ sleepers.adj <- sapply(unique(sleepers.pop$StateNum),
 # Store the adjusted prevalence as a percentage in a new column, "value".
 sleepers.adj %>% mutate(value=adj.rate*100) %>% 
     select(StateNum, value) -> sleep.state.adj
+
+# ---------------------------------------------------------------------------
+# Create choropleth map
+# ---------------------------------------------------------------------------
 
 # Prepare states data.frame for use with cloroplethr by adding "region" column.
 states <- mutate(states, region=tolower(State))
