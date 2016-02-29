@@ -338,7 +338,7 @@ choro$show_labels <- FALSE
 
 # Render the map with reversed, relocated, and resized legend.
 us.sleep.map <- choro$render() + guides(fill = guide_legend(reverse=TRUE)) +
-    theme(legend.position = c(0.86, 0.17), legend.key.size = unit(.60, "cm"))
+    theme(legend.position = c(0.87, 0.17), legend.key.size = unit(.60, "cm"))
 
 # Add DC to the map as a square floating offshore above the legend.
 us.sleep.map <- us.sleep.map + 
@@ -362,7 +362,7 @@ data.src <- "Behavioral Risk Factor Surveillance System, United States, 2014"
 # Layout the figure with source attribution string at bottom of plot area.
 gmap <- arrangeGrob(us.sleep.map, 
                     top=textGrob(plot.title, x=0, hjust=-.09, vjust=1, 
-                                 gp=gpar(fontface="plain", fontsize=16)),
+                                 gp=gpar(fontface="plain", fontsize=17)),
                     bottom=textGrob(data.src, x=0, hjust=-.16, vjust=.25, 
                                    gp=gpar(fontface="italic", fontsize=12)))
 
