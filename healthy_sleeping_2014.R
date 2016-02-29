@@ -339,7 +339,7 @@ data.src <- "Behavioral Risk Factor Surveillance System, United States, 2014"
 gmap <- arrangeGrob(us.sleep.map, 
                     top=textGrob(plot.title, x=0, hjust=-.07, vjust=1, 
                                  gp=gpar(fontface="plain", fontsize=16)),
-                    bottom=textGrob(data.src, x=0, hjust=-.2, vjust=0, 
+                    bottom=textGrob(data.src, x=0, hjust=-.15, vjust=.25, 
                                    gp=gpar(fontface="italic", fontsize=12)))
 
 # Save map as a PNG file.
