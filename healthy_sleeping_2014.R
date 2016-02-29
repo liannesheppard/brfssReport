@@ -303,12 +303,17 @@ summary(map.values)
 # List the groups that will be used in the 5-color choropleth map.
 map.values[order(map.values$value),] %>% 
     mutate(group=cut2(value, g=5)) %>% group_by(group) %>% 
-    dplyr::summarize(regions=n(), mean_value=round(mean(value), 1))
+    dplyr::summarize(regions=n(), mean_value=round(mean(value), 1)) -> groups
+groups
 
 # D.C. will be too small on the map to see. Find it's group and print as text.
 map.values %>% transform(group=cut2(value, g=5)) %>% 
-    filter(region == "district of columbia")
+    filter(region == "district of columbia") -> dc.value
+dc.value
 
+# Find color of DC as it would appear in the 5-level "Blues" choropleth map.
+dc.value$color <- brewer.pal(5, "Blues")[
+    which(groups$group %in% dc.value$group)]
 
 # :----------------------------------------------------------------------------:
 # Create choropleth map
@@ -331,8 +336,17 @@ choro$show_labels <- FALSE
 #    values=colorRampPalette(brewer.pal(5, "Blues"))(5),
 #    guide=guide_legend(reverse=TRUE))
 
-# Render and display the map.
-us.sleep.map <- choro$render()
+# Render the map with reversed, relocated, and resized legend.
+us.sleep.map <- choro$render() + guides(fill = guide_legend(reverse=TRUE)) +
+    theme(legend.position = c(0.86, 0.17), legend.key.size = unit(.60, "cm"))
+
+# Add DC to the map as a square floating offshore above the legend.
+us.sleep.map <- us.sleep.map + 
+    geom_point(data = dc.value, shape=15, size=5, color=dc.value$color, 
+               aes(x=-73, y=37)) + 
+    geom_text(data=dc.value, aes(x=-71, y=37, label="DC"))
+
+# Display the map.
 print(us.sleep.map)
 
 # :----------------------------------------------------------------------------:
@@ -347,12 +361,12 @@ data.src <- "Behavioral Risk Factor Surveillance System, United States, 2014"
 
 # Layout the figure with source attribution string at bottom of plot area.
 gmap <- arrangeGrob(us.sleep.map, 
-                    top=textGrob(plot.title, x=0, hjust=-.07, vjust=1, 
+                    top=textGrob(plot.title, x=0, hjust=-.09, vjust=1, 
                                  gp=gpar(fontface="plain", fontsize=16)),
-                    bottom=textGrob(data.src, x=0, hjust=-.15, vjust=.25, 
+                    bottom=textGrob(data.src, x=0, hjust=-.16, vjust=.25, 
                                    gp=gpar(fontface="italic", fontsize=12)))
 
 # Save map as a PNG file.
 ggsave(filename='healthy_sleepers_by_state_2014.png', 
-       plot=gmap, width=6, height=3.6, units='in')
+       plot=gmap, width=6.5, height=5, units='in')
 
