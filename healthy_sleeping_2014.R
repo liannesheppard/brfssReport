@@ -338,9 +338,9 @@ data.src <- "Behavioral Risk Factor Surveillance System, United States, 2014"
 # Layout the figure with source attribution string at bottom of plot area.
 gmap <- arrangeGrob(us.sleep.map, 
                     top=textGrob(plot.title, x=0, hjust=-.07, vjust=1, 
-                                 gp=gpar(fontface="plain", fontsize=12)),
+                                 gp=gpar(fontface="plain", fontsize=16)),
                     bottom=textGrob(data.src, x=0, hjust=-.2, vjust=0, 
-                                   gp=gpar(fontface="italic", fontsize=8)))
+                                   gp=gpar(fontface="italic", fontsize=12)))
 
 # Save map as a PNG file.
 ggsave(filename='healthy_sleepers_by_state_2014.png', 
