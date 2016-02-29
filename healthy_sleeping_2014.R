@@ -1,11 +1,11 @@
-# ----------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Create a choropleth map for US states by prevalance of healthy sleeping 
 # duration (>= 7 hrs per 24 hour day) for adults in 2014 using CDC BRFSS data.
 #
 # Copyright: Brian High (https://github.com/brianhigh)
 # License: GNU GPL v3, CC BY-SA 4.0 International, or GNU GFDL v1.3
 #          You may choose any one of these, or higher versions thereof.
-# ----------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 #
 # Tested to work on Windows 10, OS X Yosemite, and Ubuntu 14.04 LTS.
 # Requires "pdftotext". See: http://www.foolabs.com/xpdf/download.html 
@@ -32,9 +32,9 @@
 # 2000 US Standard Population figures for ages 0-99 will be extracted from an
 # NIH webpage. Repeated execution of this script will used cached files.
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Clear workspace and load packages
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Clear the workspace, unless you are running in knitr context.
 # See: https://support.rstudio.com/hc/en-us/articles/200552276
@@ -63,9 +63,9 @@ for (pkg in pkgs) {
 datadir <- "data"
 dir.create(file.path(datadir), showWarnings=FALSE, recursive=TRUE)
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Get the data
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Use cached data files, if present, or download and extract as needed.
 # Note: If you want the script to get all the data directly from the sources
@@ -106,9 +106,9 @@ if (! file.exists(allsleepersfile)) {
     all.sleepers <- as.data.table(read.csv(allsleepersfile, header=TRUE))
 }
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Perform sanity checks and subsetting
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Check the number of rows in the dataset. The BRFSS 2014 Survey Data page
 # (http://www.cdc.gov/brfss/annual_data/annual_2014.html), under "Data Files"
@@ -151,9 +151,9 @@ all.sleepers[SLEPTIM1 >= 7 & X_AGE80 >= 18, 100*.N/num.resp]
 #
 # Or maybe a different survey variable was used for respondent age.
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Exctract the sleeping health (SLEPTIM1), count total respondents and also the 
 # respondents who sleep at least 7 hours a day (SLEPTIM1 >= 7) by state and age.
@@ -183,9 +183,9 @@ sleepers %>% transform(
     mutate(CrudePrevalence=HealthySleepers/Respondents)
 
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Get state names to match up with the state codes in the BRFSS dataset
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Download the BRFSS codebook for 2014 from the CDC as a PDF file.
 codebkurl <- 'http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf'
@@ -225,9 +225,9 @@ if (! file.exists(statesfile)) {
     states <- read.csv(statesfile, header=TRUE)
 }
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Get US standard population totals by single ages to use for age-adjustment
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Get the 2000 US Standard Population (Census P25-1130), Single Ages to 99,
 # to be used for age-adjustment. http://wonder.cdc.gov/wonder/help/faq.html#6
@@ -250,9 +250,9 @@ if (! file.exists(agesfile)) {
 }
 
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Calculate age-adjusted prevalence of healthy sleep duration by state
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Merge with "sleepers" with "ages" to get standard population.
 sleepers.pop <- merge(sleepers, ages, by="Age")
@@ -283,9 +283,9 @@ sleepers.adj <- sapply(unique(sleepers.pop$StateNum),
 sleepers.adj %>% mutate(value=adj.rate*100) %>% 
     select(StateNum, value) -> sleep.state.adj
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Prepare map values data frame and look it over before plotting
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Prepare states data.frame for use with cloroplethr by adding "region" column.
 states <- mutate(states, region=tolower(State))
@@ -300,9 +300,9 @@ head(map.values)
 tail(map.values)
 summary(map.values)
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Create choropleth map
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Make the choropleth map with choroplethr, using 5 age-ranges.
 choro <- StateChoropleth$new(map.values)
@@ -325,9 +325,9 @@ choro$show_labels <- FALSE
 us.sleep.map <- choro$render()
 print(us.sleep.map)
 
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 # Save the map as a PNG file with title and data source credit (as footer)
-# ---------------------------------------------------------------------------
+# :----------------------------------------------------------------------------:
 
 # Define plot title and data source (footer).
 plot.title <- paste(
