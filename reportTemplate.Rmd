@@ -1,0 +1,94 @@
+---
+title: "Report Template"
+author: "Keith Baggerly"
+date: "November 19, 2015"
+output:
+  html_document:
+    fig_caption: yes
+    highlight: pygments
+    number_sections: yes
+    theme: united
+    toc: yes
+    toc_depth: 3
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+  word_document:
+    fig_caption: yes
+    highlight: tango
+---
+
+# Executive Summary
+
+## Introduction
+
+Who is this for?  
+What is the motivating question?  
+What is the objective of this report?  
+
+## Data and Methods
+
+Where is the data?  
+When did we get it?  
+What are we measuring?  
+How many samples do we have?  
+What groups are we contrasting?  
+What statistical tests will we use?  
+How will we account for multiple testing?  
+
+Are there some differences we expect to see _a priori_? (positive controls)  
+Do we know what "no structure" should look like? (negative controls)  
+
+## Results
+
+What did our statistical tests show?  
+What figures illustrate this? How?  
+Do our results pass simple sanity checks?  
+What summary files (if any) accompany this report?  
+
+## Conclusions
+
+Given the data, does our initial hypothesis seem plausible?  
+
+# Loading Libraries and Data
+
+## Libraries
+
+Here we load all of the R libraries we'll be using in this analysis.
+
+```{r loadLibraries}
+
+library(knitr)
+library(knitrBootstrap)
+
+```
+
+## Data
+
+# Analysis
+
+```{r someCodeExample}
+
+x <- 5
+y <- 10
+x + y
+
+```
+
+```{r someFigureExample}
+
+plot(c(1:10), c(1:10)^3, xlab="X", ylab="X^3")
+
+```
+
+
+# Appendix
+
+```{r getInfo, echo=TRUE}
+
+getwd()
+sessionInfo()
+
+```
+
