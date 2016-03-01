@@ -2,14 +2,21 @@
 title: "Markdown Reports of Data Analyses -- BRFSS example"
 author: "Lianne Sheppard"
 date: "Monday, February 22, 2016"
-output: html_document
+output: 
+  ioslides_presentation:
+        fig_width: 8.5
+        fig_height: 3.5
+        keep_md: yes
+        smaller: yes 
+  html_document:
+        fig_caption: yes
+        
 ---
 # Writing Reports in Rmarkdown
 
 ---  
----
 
-# Outline
+## Outline
 * Learning objectives
 * Rmarkdown basics
 * Report outline and structure  
@@ -17,13 +24,13 @@ output: html_document
 
 ---
 
-# Learning objectives
+## Learning objectives
 * Become familiar with Rmarkdown  
 * Understand the role of good reports in reproducible research    
 
 ---  
 
-# Why am I focusing on this?
+## Why am I focusing on this?
 * Just as we should always approach statistical analyses with a plan in mind, it is very helpful to have a structured approach to reporting the full scope of our analyses
 * We want to document our work to support it being reproducible
 * We should summarize our work in a fashion that is useful to all collaborators
@@ -31,7 +38,7 @@ output: html_document
 
 ---  
 
-# R Markdown (.Rmd) basics  
+## R Markdown (.Rmd) basics  
 
 Format for writing reproducible, dynamic reports with R. A core tool in literate statistical programming.
 
@@ -56,7 +63,7 @@ Make use of empty lines and spaces at the end of lines to start new paragraphs o
 
 ```
 Use *italics* or _italics_ 
-and **bold** or __bold__:
+and **bold** or __bold__
 ```
 
 Use *italics* or _italics_ 
@@ -65,7 +72,7 @@ and **bold** or __bold__
 --------------------------
 
 ```
-superscripts^2^:
+superscripts^2^
 ```
 superscripts^2^  
 
@@ -113,7 +120,7 @@ Use # to indicate headings, one # for every level:
 
 ---
 
-#Embed R code
+## Embed R code
 
 **Inline code** -- Surround code with back ticks and r:
 
@@ -122,7 +129,7 @@ Two plus two equals `r 2 + 2`
 ```
 Two plus two equals `r 2 + 2`
 
-**Code chunks** -- Start a chunk with 3 back ticks and {r}.  End the chunk with 3 back ticks:
+**Code chunks** -- Start a chunk with 3 back ticks and {r}.  Insert a descriptive name after r in order to name the code chunk.  End the chunk with 3 back ticks:
 
 <pre>
 Sample code:
@@ -132,7 +139,7 @@ dim(iris)
 </pre>
 
 Sample code:
-```{r}
+```{r SampleCodeChunk}
 dim(iris)
 ```
 
@@ -140,18 +147,21 @@ Use display options (eval, echo) to tell R whether to evaluate or show code
 
 ---   
 
-# Report outline  
+## Report outline  
 * Executive summary (text only; max 2 pages)
     + Introduction
     + Data & methods
     + Results
     + Conclusions
+* Loading libraries and data
+    * Libraries
+    * Data
 * Full data analysis (up to 15 pages)
 * Appendix
 
 ---
 
-# Let's start our Rmarkdown report
+## Let's start our Rmarkdown report
 
 1. Open Rstudio
 2. New file -- Rmarkdown
@@ -171,11 +181,13 @@ Use display options (eval, echo) to tell R whether to evaluate or show code
 
 ## Conclusions
 
----
+# Loading libraries and data
+
+## Libraries
+
+## Data
 
 # Full data analysis
-
----
 
 # Appendix
 
@@ -197,7 +209,7 @@ Use display options (eval, echo) to tell R whether to evaluate or show code
 
 ---
 
-# Executive summary
+## Executive summary
 
 Write in prose, ideally <= 2 pages.
 Should be clear to everyone on the project team.  
@@ -215,7 +227,7 @@ Should be clear to everyone on the project team.
 
 ---
 
-# Introduction
+## Introduction
 
 * Background and rationale:
     * Why are we doing this?
@@ -228,10 +240,12 @@ Should be clear to everyone on the project team.
 
 ---
 
-# Data & methods
+## Data & methods
 
 ##### What are our data?  
-Where did our data come from? (Supply URLs as appropriate)  
+Where did our data come from? (Supply URLs as appropriate)
+When did we get the data?
+What are we measuring?
 How many samples/subjects?  
 How many measurements per subject/sample?  
 What covariates are important?  
@@ -247,36 +261,54 @@ What sensitivity analyses are planned?
 
 ---
 
-# Results
+## Results
 
 Use this section to provide an *objective summary* of the findings; interpretation goes in the conclusions section.
 
-Figures and tables can be referenced, but don't belong in the executive summary.
+What did our statistical analyses show?
+    * Reference the figures and tables that show this  (Don't include them in the executive summary)
+    
+Do our results pass sanity checks?
 
-Files produced by the analysis should be listed by name.
+What summary files accompany this analysis?
+    * List files produced by the analysis by name.
 
 Anticipate questions from collaborators and answer them.
 
 ---
 
-# Conclusions
+## Conclusions
 
 The concluions provide the context for the results.  This is the place for interpretation in light of our objectives.
 
 For each objective, include a statement or two about how that objective has or hasn't been met.
     * Keep reporting of objectives in the same order.
+    * Address:  Given the data did our initial hypothesis seem plausible?
 
-This section can include a discussion of the implications of the findings.  This can address data quality issues, caveats or limitations of the approach, and possible next steps.
+This section can include a discussion of the implications of the findings.  Also include data quality issues, caveats or limitations of the approach, and possible next steps.
 
 ---
 
-# Full data analysis
+## Loading libraries and data
+
+For the libraries section, include text such as:
+
+```{r loadLibraries}
+
+library(knitr)
+library(ggplot2)
+
+```
+
+For the data subsection, include both text to describe and code to access the data.  All steps for reading and preprocessing the data belong here.
+
+---
+
+## Full data analysis
 
 This section should include: 
 
-* Steps for reading and preprocessing the data
-
-* Descriptive data analyses and verification that you are analyzing the dat you intend to analyze
+* Descriptive data analyses and verification that you are analyzing the data you intend to analyze
 
 * Inferential analyses
 
@@ -292,6 +324,14 @@ Also put in some documentation about the report, updated every time the report i
 ```
 > sessionInfo()
 > getwd()
+```
+
+For instance:
+```{r getInfo, echo=TRUE}
+
+getwd()
+sessionInfo()
+
 ```
 
 ---
@@ -352,33 +392,17 @@ Circulating drafts of the introduction plus data & methods sections before the d
 
 ---
 
-# Writing a report of a data analysis
+## Writing a report of a data analysis
 
-I will use the BRFSS data to guide this exercise.  You may use your own project instead if you prefer.
+Our goal is to replicate the analysis of sleep recently published in the MMWR (ADD DETAILS) and produce their chloropleth map.
+
+We will develop an R Markdown report of our work.  We will use the R code in the file healthy_sleeping.R for the code in our R Markdown report.  
+
+Start by cloning from github:  <https://github.com/liannesheppard/brfssReport.git>
+
+Take the code from the R file and insert it as appropriate into your R Markdown report.  Also insert text in the appropriate report sections.  Hand in a compiled version of your report.
 
 
-INSERT some ideas and sample text
-
-Include some visualizations
 
 
-
-
-## Default additions included below.  Delete eventually  
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown 
-see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r}
-summary(cars)
-```
-
-You can also embed plots, for example:
-
-```{r, echo=FALSE}
-plot(cars)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
