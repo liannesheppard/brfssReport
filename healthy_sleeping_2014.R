@@ -265,16 +265,28 @@ if (! file.exists(agesfile)) {
     ages <- read.csv(agesfile, header=TRUE, stringsAsFactors=FALSE)
 }
 
-# Group ages 80 and older into age 80 and remove rows for ages older than 80. 
+# Collapse age values over 80 to create an "80+" age group, labeled "80".
 # This is to match the CDC's _AGE80 variable: "18-80 age groupings (80=80+)".
 # See: "Summary Matrix of Calculated Variables (CV) in the 2014 Data File",
 # http://www.cdc.gov/brfss/annual_data/2014/summary_matrix_14_version12.html
+# Codebook description for _AGE80 is: "Imputed Age value collapsed above 80"
+# See: http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf
 ages$StdPop[ages$Age == 80] <- sum(ages[ages$Age >= 80, "StdPop"])
 ages <- as.data.table(ages[ages$Age <= 80, ])
 
 # :----------------------------------------------------------------------------:
 # Calculate age-adjusted prevalence of healthy sleep duration by state
 # :----------------------------------------------------------------------------:
+
+# The authors of the original paper report that:
+#
+# "The age-adjusted prevalence and 95% confidence interval (CI) of the 
+# recommended healthy sleep duration (>=7 hours) was calculated by state and 
+# selected characteristics, and adjusted to the 2000 projected U.S. population 
+# aged >= 18 years."
+# 
+# We will perform age-adjustment of the crude prevalence of healthy sleep 
+# duration among adult respondents using the _AGE80 variable by state (_STATE).
 
 # Compare the count of respondents and 2000 US Standard Population by age.
 sleepers[, lapply(.SD, sum), by=Age] %>% inner_join(ages, by="Age") %>% 
