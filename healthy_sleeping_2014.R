@@ -167,9 +167,9 @@ all.sleepers[SLEPTIM1 >= 7 & X_AGE80 >= 18, 100*.N/num.resp]
 # 18-64 and 65+ 10 year age groupings.           _AGE_G
 # 18-80 age groupings (80=80+)                   _AGE80
 
-# We will use the _AGE80 variable for age adjustment, using US standard
-# population totals for single ages up to 80 years of age, and then a combined
-# population total for ages 80 and older (80=80+).
+# We will use the _AGE80 variable for age adjustment, using 2000 US Standard 
+# Population totals for single ages up to 80 years of age, and then a grouped
+# Standard Population total for ages 80 and older (80=80+).
 
 # Exctract the sleeping health (SLEPTIM1), count total respondents and also the 
 # respondents who sleep at least 7 hours a day (SLEPTIM1 >= 7) by state and age.
@@ -270,21 +270,21 @@ if (! file.exists(agesfile)) {
 # See: "Summary Matrix of Calculated Variables (CV) in the 2014 Data File",
 # http://www.cdc.gov/brfss/annual_data/2014/summary_matrix_14_version12.html
 ages$StdPop[ages$Age == 80] <- sum(ages[ages$Age >= 80, "StdPop"])
-ages <- ages[ages$Age <= 80, ]
-
-# Compare the standard population by age and the repoondents by age.
-# plot(ages[ages$Age >= 18,])
-# sleepers.pop[,lapply(.SD, sum), by=Age] %>% select(Age, Respondents) %>% plot
+ages <- as.data.table(ages[ages$Age <= 80, ])
 
 # :----------------------------------------------------------------------------:
 # Calculate age-adjusted prevalence of healthy sleep duration by state
 # :----------------------------------------------------------------------------:
 
-# Merge with "sleepers" with "ages" to get standard population.
-sleepers.pop <- merge(sleepers, ages, by="Age")
+# Compare the count of respondents and 2000 US Standard Population by age.
+sleepers[, lapply(.SD, sum), by=Age] %>% inner_join(ages, by="Age") %>% 
+    melt("Age", c("Respondents", "StdPop"), "Type", "Count") %>% 
+    ggplot(., aes(Age, Count)) + geom_point() + geom_line() +
+    facet_grid(Type ~ ., scales="free_y") + 
+    ggtitle("Respondents and 2000 US Standard Population by Age (18 to 80=80+)")
 
-# View first and last rows.
-sleepers.pop
+# Merge with "sleepers" with "ages" to get standard population.
+sleepers.pop <- inner_join(sleepers, ages, by="Age")
 
 # Create a wrapper function around the `ageadjust.direct()` function from
 # the epitools package.
