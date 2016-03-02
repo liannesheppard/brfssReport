@@ -272,6 +272,10 @@ if (! file.exists(agesfile)) {
 ages$StdPop[ages$Age == 80] <- sum(ages[ages$Age >= 80, "StdPop"])
 ages <- ages[ages$Age <= 80, ]
 
+# Compare the standard population by age and the repoondents by age.
+# plot(ages[ages$Age >= 18,])
+# sleepers.pop[,lapply(.SD, sum), by=Age] %>% select(Age, Respondents) %>% plot
+
 # :----------------------------------------------------------------------------:
 # Calculate age-adjusted prevalence of healthy sleep duration by state
 # :----------------------------------------------------------------------------:
