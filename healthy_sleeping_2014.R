@@ -155,6 +155,22 @@ all.sleepers[SLEPTIM1 >= 7 & X_AGE80 >= 18, 100*.N/num.resp]
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
 # :----------------------------------------------------------------------------:
 
+# There are several age variables in the dataset. Here is a summary of them
+# taken from Summary Matrix of Calculated Variables (CV) in the 2014 Data File,
+# http://www.cdc.gov/brfss/annual_data/2014/summary_matrix_14_version12.html
+#
+# Description or Result                          Output Variables
+# of Calculation                                 (In Final Data Set)
+# -------------------------------------------    -------------------
+# 18-24 and then 5-year age groupings to 80+.    _AGEG5YR
+# 18-64 and 65+ age groupings.                   _AGE65YR
+# 18-64 and 65+ 10 year age groupings.           _AGE_G
+# 18-80 age groupings (80=80+)                   _AGE80
+
+# We will use the _AGE80 variable for age adjustment, using US standard
+# population totals for single ages up to 80 years of age, and then a combined
+# population total for ages 80 and older (80=80+).
+
 # Exctract the sleeping health (SLEPTIM1), count total respondents and also the 
 # respondents who sleep at least 7 hours a day (SLEPTIM1 >= 7) by state and age.
 sleepers <- all.sleepers[X_AGE80 >= 18, list(Respondents=.N,
@@ -249,6 +265,12 @@ if (! file.exists(agesfile)) {
     ages <- read.csv(agesfile, header=TRUE, stringsAsFactors=FALSE)
 }
 
+# Group ages 80 and older into age 80 and remove rows for ages older than 80. 
+# This is to match the CDC's _AGE80 variable: "18-80 age groupings (80=80+)".
+# See: "Summary Matrix of Calculated Variables (CV) in the 2014 Data File",
+# http://www.cdc.gov/brfss/annual_data/2014/summary_matrix_14_version12.html
+ages$StdPop[ages$Age == 80] <- sum(ages[ages$Age >= 80, "StdPop"])
+ages <- ages[ages$Age <= 80, ]
 
 # :----------------------------------------------------------------------------:
 # Calculate age-adjusted prevalence of healthy sleep duration by state
