@@ -281,17 +281,22 @@ sleepers.adj <- sapply(unique(sleepers.pop$StateNum),
 
 # Store the adjusted prevalence as a percentage in a new column, "value".
 sleepers.adj %>% mutate(value=adj.rate*100) %>% 
-    select(StateNum, value) -> sleep.state.adj
+    select(StateNum, value) -> sleep.state
 
 # :----------------------------------------------------------------------------:
 # Prepare map values data frame and look it over before plotting
 # :----------------------------------------------------------------------------:
 
+# Calculate crude prevalence of healthy sleepers per state as "value".
+# Note: Uncomment the next command to plot the non-age-adjusted prevalence.
+#sleep.state <- sleepers[,list(value=100*sum(HealthySleepers)/sum(Respondents)), 
+#                        by=StateNum]
+
 # Prepare states data.frame for use with cloroplethr by adding "region" column.
 states <- mutate(states, region=tolower(State))
 
 # Merge in the state names for use when making the choropleth map.
-merge(states, sleep.state.adj) %>% select(region, value) -> map.values
+merge(states, sleep.state) %>% select(region, value) -> map.values
 
 # View the first and last few rows and a summary.
 # Compare with the values in the State and % columns of TABLE 2 from
