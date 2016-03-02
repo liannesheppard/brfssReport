@@ -327,15 +327,6 @@ choro$set_num_colors(5)
 # Remove the state labels to match the original map from the article.
 choro$show_labels <- FALSE
 
-# By default, we get a blue color palette, and the legend has value groups  
-# ordered from low to high. The map in the article uses the reverse order.
-# Reverse the order of the levels in the legend to match the original map.
-# This method requires us to reset the color palette to match the original.
-# NOTE: This causes Alaska to get the wrong color, so don't run this code. 
-#choro$ggplot_scale <- scale_fill_manual("",
-#    values=colorRampPalette(brewer.pal(5, "Blues"))(5),
-#    guide=guide_legend(reverse=TRUE))
-
 # Render the map with reversed, relocated, and resized legend.
 us.sleep.map <- choro$render() + guides(fill = guide_legend(reverse=TRUE)) +
     theme(legend.position = c(0.87, 0.17), legend.key.size = unit(.60, "cm"))
