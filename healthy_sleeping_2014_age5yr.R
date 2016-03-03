@@ -205,6 +205,7 @@ prevalence
 
 # Respondents matches the "Unweighted sample of respondents" by age group. 
 # CrudePrevalence does *not* match the "%" column for age groups in Table 1.
+# Check age-adjusted prevalence later in this script.
 
 #:-----------------------------------------------------------------------------:
 # Get US standard population totals by age group to use for age-adjustment
