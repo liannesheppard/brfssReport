@@ -1,42 +1,44 @@
 ---
-title: "Markdown Reports of Data Analyses -- BRFSS example"
+title: "Writing Reports in R Markdown"
 author: "Lianne Sheppard"
 date: "Monday, February 22, 2016"
-output: 
-  ioslides_presentation:
-        fig_width: 8.5
+output:
+    ioslides_presentation:
         fig_height: 3.5
+        fig_width: 8.5
         keep_md: yes
-        smaller: yes 
-  html_document:
-        fig_caption: yes
-        
+        smaller: yes
 ---
-# Writing Reports in Rmarkdown
 
----  
+## Markdown Reports of Data Analyses -- BRFSS example
 
-## Outline
+Today we will write a report using R Markdown
+
+Please turn in a compiled report at the end of today's class
+  
+
+## Outline of today's lab
 * Learning objectives
 * Rmarkdown basics
 * Report outline and structure  
-* Putting it all together:  BRFSS example  
+* Putting it all together:  Your report using a BRFSS example  
 
----
+
 
 ## Learning objectives
 * Become familiar with Rmarkdown  
-* Understand the role of good reports in reproducible research    
+* Learn how to produce reports 
+* Begin to appreciate reproducibility in research    
 
----  
+  
 
 ## Why am I focusing on this?
 * Just as we should always approach statistical analyses with a plan in mind, it is very helpful to have a structured approach to reporting the full scope of our analyses
-* We want to document our work to support it being reproducible
-* We should summarize our work in a fashion that is useful to all collaborators
+* We should document our work to support its reproducibility
+* We should produce reports that are useful to all collaborators
      * This means helping readers glean the important results from the first few pages of the report   
 
----  
+  
 
 ## R Markdown (.Rmd) basics  
 
@@ -50,7 +52,7 @@ Easy to manage workflow in Rstudio.
 
 See the R Markdown [cheatsheet](http://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
 
---- 
+ 
 
 ## Formatting  
 
@@ -69,14 +71,12 @@ and **bold** or __bold__
 Use *italics* or _italics_ 
 and **bold** or __bold__
 
---------------------------
-
 ```
 superscripts^2^
 ```
 superscripts^2^  
 
----  
+  
 
 ## Headers:  
 
@@ -87,7 +87,9 @@ Use # to indicate headings, one # for every level:
 ### Header Level 3, etc
 
 ```
-Use # to indicate headings, one # for every level:  
+
+Note:  header level 1 generates a new slide in ioslides, but is just the highest level header in reports
+
 
 # Header Level 1
 
@@ -95,7 +97,7 @@ Use # to indicate headings, one # for every level:
 
 ### Header Level 3, etc
 
----  
+  
 
 ## Lists:  
 ```
@@ -118,14 +120,14 @@ Use # to indicate headings, one # for every level:
 4. Ordered item 3 -- note the numbers you assign don't matter
 3. Ordered item 4
 
----
+
 
 ## Embed R code
 
 **Inline code** -- Surround code with back ticks and r:
 
 ```
-Two plus two equals `r 2 + 2`
+Two plus two equals ` r 2 + 2`   **Need to remove the space**
 ```
 Two plus two equals `r 2 + 2`
 
@@ -133,7 +135,7 @@ Two plus two equals `r 2 + 2`
 
 <pre>
 Sample code:
-```&#123;r&#125;
+```&#123;r SampleCodeChunk&#125;
 dim(iris)
 ```
 </pre>
@@ -143,9 +145,9 @@ Sample code:
 dim(iris)
 ```
 
-Use display options (eval, echo) to tell R whether to evaluate or show code
+Use display options (`eval`, `echo`) to tell R whether to evaluate or show code
 
----   
+   
 
 ## Report outline  
 * Executive summary (text only; max 2 pages)
@@ -159,62 +161,59 @@ Use display options (eval, echo) to tell R whether to evaluate or show code
 * Full data analysis (up to 15 pages)
 * Appendix
 
----
+
 
 ## Let's start our Rmarkdown report
 
 1. Open Rstudio
 2. New file -- Rmarkdown
-3. Choose a title, etc **ADD**
-4. Insert some headers and section breaks:
+3. Choose a title, etc in the dialog box
+4. Insert some headers (with blank lines following them):
 
 ```
----
-
 # Executive summary
-
 ## Introduction
-
 ## Data & methods
-
 ## Results
-
 ## Conclusions
-
 # Loading libraries and data
-
 ## Libraries
-
 ## Data
-
 # Full data analysis
-
 # Appendix
-
 ```
 
-5. Save and Knit
+Save and Knit
 
----
+
 
 ## What should a report contain?
+
+#### An executive summary discussing your work:     
+
 
 1. Clearly state the underlying scientific question you hope to address
 2. Include a description of the experiments or observational study design with mention of how these are expected to answer the question (_a priori_ expectations about the results)
       * If this report is a subset of the full project, note what part of the analysis is in this report
 3. Briefly summarize the results of the analysis
-4. Describe the conclusions to be drawn from the results and next steps
-5. At the end present the full analysis
-6. Wrap up with an appendix that includes at least a few administrative details
+4. Describe the conclusions to be drawn from the results and next steps 
 
----
+#### A full analysis
+
+This includes   
+* Code to load the libraries and data  
+* Code to produce results, tables and figures desired  
+    
+#### An appendix that includes at least a few administrative details
+
+
 
 ## Executive summary
 
-Write in prose, ideally <= 2 pages.
+Write in prose, ideally <= 2 pages.  
 Should be clear to everyone on the project team.  
 
-#### Outline
+### Outline
 
 1. Introduction
     * Background
@@ -225,69 +224,65 @@ Should be clear to everyone on the project team.
 3. Results
 4. Conclusions
 
----
+
 
 ## Introduction
 
-* Background and rationale:
+* Background and rationale
     * Why are we doing this?
     * Who are we doing it for?  
-    * Why is this a reasonabl thing to try?  
+    * Why is this a reasonable thing to try?  
 
 * Objectives
     * What are we trying to establish?
     * What outcomes would constitute success?
 
----
+
 
 ## Data & methods
 
-##### What are our data?  
-Where did our data come from? (Supply URLs as appropriate)
-When did we get the data?
-What are we measuring?
-How many samples/subjects?  
-How many measurements per subject/sample?  
-What covariates are important?  
+##### What are our data?   
+Where did our data come from? (Supply URLs as appropriate)  
+When did we get the data?  
+What are we measuring?  
+How many samples/subjects?   
+How many measurements per subject/sample?    
+What covariates are important?   
 
 ##### How are we processing the data?  
+Are we looking at a subset?  
 If the data will be filtered or grouped, what cutoffs will be used?  
 
 ##### Describe the analysis approach.  
-What statistical tests are being used?
-What sensitivity analyses are planned?
+What statistical tests are being used?  
+What sensitivity analyses are planned?  
 
-
-
----
 
 ## Results
 
 Use this section to provide an *objective summary* of the findings; interpretation goes in the conclusions section.
 
-What did our statistical analyses show?
-    * Reference the figures and tables that show this  (Don't include them in the executive summary)
+What did our statistical analyses show?  
+     * Reference the figures and tables that show this  (Don't include them in the executive summary)
     
 Do our results pass sanity checks?
 
-What summary files accompany this analysis?
-    * List files produced by the analysis by name.
+What summary files accompany this analysis?  
+      * List files produced by the analysis by name.
 
 Anticipate questions from collaborators and answer them.
 
----
 
 ## Conclusions
 
 The concluions provide the context for the results.  This is the place for interpretation in light of our objectives.
 
-For each objective, include a statement or two about how that objective has or hasn't been met.
-    * Keep reporting of objectives in the same order.
-    * Address:  Given the data did our initial hypothesis seem plausible?
+For each objective, include a statement or two about how that objective has or hasn't been met.  
+    * Keep your discission of the objectives in the same order.  
+    * Address:  Given the data did our initial objective/hypothesis seem plausible?  
 
 This section can include a discussion of the implications of the findings.  Also include data quality issues, caveats or limitations of the approach, and possible next steps.
 
----
 
 ## Loading libraries and data
 
@@ -300,9 +295,11 @@ library(ggplot2)
 
 ```
 
-For the data subsection, include both text to describe and code to access the data.  All steps for reading and preprocessing the data belong here.
+Brian recommends code that installs packages as needed.  See the code in `healthy_sleeping_2014.R` or the sample report template `reportTemplate.Rmd`.
 
----
+For the data subsection, include both text to describe and code to access the data.  All steps for reading and preprocessing the data belong in this section.
+
+
 
 ## Full data analysis
 
@@ -314,29 +311,25 @@ This section should include:
 
 * Important figures and tables  
 
----
 
-# Appendices
+
+## Appendices
 
 Include any additional details that don't belong in the full data analysis but need to be included.
 
 Also put in some documentation about the report, updated every time the report is run:
-```
-> sessionInfo()
-> getwd()
-```
 
-For instance:
-```{r getInfo, echo=TRUE}
-
-getwd()
+<pre>
+For instance: 
+```&#123;r getInfo, echo=TRUE&#125;
 sessionInfo()
-
+getwd()
 ```
+</pre>
 
----
 
-# What can we write before analyzing data? 
+
+## What can we write before analyzing data? 
 
 A surprising large amount of the report can be written before the detailed analysis has begun.
 
@@ -344,9 +337,9 @@ You can use the `eval=FALSE` option to prevent the code from being run before yo
 
 Circulating drafts of the introduction plus data & methods sections before the data analysis begins can be very helpful and *save time*
 
----
 
-# Strategies for incorporating R code
+
+## Strategies for incorporating R code
 
 * Precede each block of code with a statement of the purpose of this code block
 
@@ -362,9 +355,9 @@ Circulating drafts of the introduction plus data & methods sections before the d
      * Refer to your entries by name, not number
 
 
----
 
-# Tips for clarity
+
+## Tips for clarity
 
 * Does everyone on your team have a common understanding of the goals?
 
@@ -376,9 +369,9 @@ Circulating drafts of the introduction plus data & methods sections before the d
     
 * Make sure it is clear what each chunk of code is meant to do
 
----
 
-# Some ideas for sanity checks
+
+## Some ideas for sanity checks
 
 * How do you know you are analyzing the data you think you are analyzing?  
      * Have you verified the sample size is correct at each data massaging step?
@@ -390,19 +383,14 @@ Circulating drafts of the introduction plus data & methods sections before the d
 
 * What do you expect to see if the data are purely noise?
 
----
+
 
 ## Writing a report of a data analysis
 
-Our goal is to replicate the analysis of sleep recently published in the MMWR (ADD DETAILS) and produce their chloropleth map.
+Our goal is to replicate the analysis of healthy sleep recently published in a February 2016 MMWR report and reproduce their chloropleth map.
 
-We will develop an R Markdown report of our work.  We will use the R code in the file healthy_sleeping.R for the code in our R Markdown report.  
+We will develop an R Markdown report of our work.  We will use the R code in the file `healthy_sleeping.R` for the code in our R Markdown report.  
 
 Start by cloning from github:  <https://github.com/liannesheppard/brfssReport.git>
 
-Take the code from the R file and insert it as appropriate into your R Markdown report.  Also insert text in the appropriate report sections.  Hand in a compiled version of your report.
-
-
-
-
-
+Take the code from the R file and insert it as appropriate into your R Markdown report.  Also insert text in the appropriate report sections.  Hand in a compiled version of your report.  
