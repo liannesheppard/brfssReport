@@ -302,11 +302,11 @@ if (!file.exists(codebkfile)) {
 statesfile <- 'data/states_list.csv'
 if (!file.exists(statesfile)) {
     # Read PDF into a list.
-    pdf <- readPDF(control = list(text = "-layout"))(
+    pdf <- suppressWarnings(readPDF(control = list(text = "-layout"))(
         elem = list(uri = codebkfile),
         language = "en",
         id = "id1"
-    )
+    ))
     
     # Read the content into a vector of strings. (Adjust index as needed.)
     states.raw <- content(pdf)[19:89]
@@ -352,13 +352,13 @@ levels(sleepers.grp$AgeGroup) <- age.groups
 
 # Calculate the age adjustment for the US standard population, 2000, by state.
 state.nums <- unique(sleepers.grp$StateNum)
-sapply(state.nums, function(x) 
+suppressMessages(sapply(state.nums, function(x) 
     with(sleepers.grp[StateNum == x,] %>% 
              inner_join(stdpop), ageadjust.direct(
                  count=HealthySleepers, pop=Respondents, stdpop=StdPop, 
                  conf.level = 0.95))) %>% t %>% as.data.table %>%
     mutate(StateNum = state.nums, value = adj.rate * 100) %>% 
-    select(StateNum, value) -> sleep.state
+    select(StateNum, value)) -> sleep.state
 
 #:-----------------------------------------------------------------------------:
 # Prepare map values data table and look it over before plotting
@@ -371,7 +371,7 @@ sapply(state.nums, function(x)
 #              by = StateNum]
 
 # Prepare states data.table for use with cloroplethr by adding "region" column.
-states[,region := tolower(State)]
+suppressWarnings(states[,region := tolower(State)])
 
 # Merge in the state names for use when making the choropleth map.
 inner_join(states, sleep.state, by = "StateNum") %>%
