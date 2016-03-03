@@ -251,13 +251,17 @@ if (!file.exists(stdpopcsvfile)) {
             stdpop.raw
         )
     
-    # Read into a data.table, label columns and write to a file for later use.
+    # Read into a data.table and label columns
     stdpop <- fread(paste(stdpop.csv, collapse = "\n"),
                     sep = ",",
                     header = FALSE)
-    
     names(stdpop) <- c("AgeGroup", "StdPop", "Weight")
     stdpop$AgeGroup <- age.groups
+    
+    # Convert from "Population in thousands"
+    stdpop$StdPop <- stdpop$StdPop * 1000
+    
+    # Write to a file for later use.
     write.csv(stdpop, stdpopcsvfile, row.names = FALSE, fileEncoding = "UTF-8")
 } else {
     # Read the CSV into a data.table.
