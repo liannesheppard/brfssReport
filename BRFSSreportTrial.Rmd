@@ -64,9 +64,9 @@ if (! isTRUE(getOption('knitr.in.progress'))) {
 }
 ```
 
-Next we load all of the R libraries we'll be using in this analysis.  No need to show the results in the report so we set `echo=F`.
+Next we load all of the R libraries we'll be using in this analysis.  No need to show the results in the report so we set `message=FALSE`.
 
-```{r loadLibraries, echo=F}
+```{r loadLibraries, message=FALSE}
 
 # Create a vector of package names for the packages we will need.
 pkgs <- c("foreign", "data.table", "dplyr", "tm", "XML", 
@@ -409,24 +409,14 @@ ggsave(filename='healthy_sleepers_by_state_2014.png',
 
 ```
 
-Our map was saved in:
-```{r MapPath}
-path <- getwd()
-paste(path,"/healthy_sleepers_by_state_2014.png")  
+Showing the map as a figure:
 
-```
-
-Showing the map as a figure:  **TODO:  Need to know how to display saved figures**
-```{r DisplayMapFigure, eval=F}
-![](paste(path,"/healthy_sleepers_by_state_2014.png"))
-```
-
+![](healthy_sleepers_by_state_2014.png)
 
 # Appendix
 
 ```{r getInfo, echo=TRUE}
 
-getwd()
 sessionInfo()
 
 ```
