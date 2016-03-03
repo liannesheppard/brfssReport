@@ -10,7 +10,7 @@
 # Tested to work on: OS X Yosemite (10.10.5), R version 3.2.3 (2015-12-10).
 #                    Windows Server 2008 R2 SP1, R version 3.2.3 (2015-12-10).
 #                    Ubuntu Linux 14.04 LTS, R version 3.2.3 (2015-12-10).
-# 
+#
 # Requires pdftotext v3 or higher. http://www.foolabs.com/xpdf/download.html
 #
 # Data source: http://www.cdc.gov/brfss/annual_data/annual_2014.html
@@ -121,7 +121,9 @@ if (!file.exists(allsleepersfile)) {
     
     # Subset by the data we need to create the choropleth and export to CSV.
     all.sleepers <- brfss[, list(X_STATE, X_AGEG5YR, SLEPTIM1)]
-    write.csv(all.sleepers, allsleepersfile, row.names = FALSE,
+    write.csv(all.sleepers,
+              allsleepersfile,
+              row.names = FALSE,
               fileEncoding = "UTF-8")
     
     # Close brfss data.table to conserve memory.
@@ -143,7 +145,7 @@ nrow(all.sleepers)
 
 # Subset the data.table for only those repondents which reported sleep time.
 # In other words, exclude "Don't know/Not Sure" and "Refused".
-all.sleepers <- all.sleepers[SLEPTIM1 <= 24,]
+all.sleepers <- all.sleepers[SLEPTIM1 <= 24, ]
 
 # Count respondents who reported hours of sleep per day.
 # Check that this is the same value as reported in the CDC codebook, page 14.
@@ -153,7 +155,7 @@ nrow(all.sleepers)
 
 # Subset the data.table for only those respondents in the 50 states and DC.
 # In other words, exclude Guam (X_STATE == 66) and Puerto Rico (X_STATE == 72).
-all.sleepers <- all.sleepers[X_STATE != 66 & X_STATE != 72,]
+all.sleepers <- all.sleepers[X_STATE != 66 & X_STATE != 72, ]
 
 # Count adult respondents in the 50 states and District of Columbia.
 # The authors of the paper write, "CDC analyzed data from the 2014 Behavioral
@@ -206,7 +208,7 @@ age.groups <- c("18-24", "25-34", "35-44", "45-64", ">=65")
 levels(prevalence$AgeGroup) <- age.groups
 prevalence
 
-# Respondents matches the "Unweighted sample of respondents" by age group. 
+# Respondents matches the "Unweighted sample of respondents" by age group.
 # CrudePrevalence does *not* match the "%" column for age groups in Table 1.
 # The percentages we have calculated are a few percent higher, especially
 # in the last two age groups. Check age-adjusted prevalence below.
@@ -267,18 +269,27 @@ if (!file.exists(stdpopcsvfile)) {
     stdpop$StdPop <- stdpop$StdPop * 1000
     
     # Write to a file for later use.
-    write.csv(stdpop, stdpopcsvfile, row.names = FALSE, fileEncoding = "UTF-8")
+    write.csv(stdpop,
+              stdpopcsvfile,
+              row.names = FALSE,
+              fileEncoding = "UTF-8")
 } else {
     # Read the CSV into a data.table.
     stdpop <- as.data.table(read.csv(stdpopcsvfile, header = TRUE))
 }
 
 # Check age-adjusted prevalence of adult respondents who sleep >= 7 hours/day.
-# The CDC authors say, "A total of 65.2% of respondents reported a healthy 
+# The CDC authors say, "A total of 65.2% of respondents reported a healthy
 # sleep duration [>=7 hours]."
-with(inner_join(prevalence, stdpop), 
-     ageadjust.direct(count=HealthySleepers, pop=Respondents, stdpop=StdPop, 
-                      conf.level = 0.95))
+with(
+    inner_join(prevalence, stdpop),
+    ageadjust.direct(
+        count = HealthySleepers,
+        pop = Respondents,
+        stdpop = StdPop,
+        conf.level = 0.95
+    )
+)
 
 # The age-adjusted rate is 66.8%, which is higher than reported in the article.
 
@@ -302,11 +313,12 @@ if (!file.exists(codebkfile)) {
 statesfile <- 'data/states_list.csv'
 if (!file.exists(statesfile)) {
     # Read PDF into a list.
-    pdf <- suppressWarnings(readPDF(control = list(text = "-layout"))(
-        elem = list(uri = codebkfile),
-        language = "en",
-        id = "id1"
-    ))
+    pdf <-
+        suppressWarnings(readPDF(control = list(text = "-layout"))(
+            elem = list(uri = codebkfile),
+            language = "en",
+            id = "id1"
+        ))
     
     # Read the content into a vector of strings. (Adjust index as needed.)
     states.raw <- content(pdf)[19:89]
@@ -326,7 +338,10 @@ if (!file.exists(statesfile)) {
                     sep = ",",
                     header = FALSE)
     names(states) <- c("StateNum", "State")
-    write.csv(states, statesfile, row.names = FALSE, fileEncoding = "UTF-8")
+    write.csv(states,
+              statesfile,
+              row.names = FALSE,
+              fileEncoding = "UTF-8")
     
 } else {
     # Read the CSV into a data.table.
@@ -337,7 +352,7 @@ if (!file.exists(statesfile)) {
 # Calculate age-adjusted prevalence of healthy sleep duration by state
 #:-----------------------------------------------------------------------------:
 
-# Collapse age groups to match Distribution #9 of the US standard population, 
+# Collapse age groups to match Distribution #9 of the US standard population,
 # 2000, then calculate sums of respondent counts by state.
 sleepers %>% transform(group = cut(
     AgeGrp,
@@ -352,13 +367,21 @@ levels(sleepers.grp$AgeGroup) <- age.groups
 
 # Calculate the age adjustment for the US standard population, 2000, by state.
 state.nums <- unique(sleepers.grp$StateNum)
-suppressMessages(sapply(state.nums, function(x) 
-    with(sleepers.grp[StateNum == x,] %>% 
-             inner_join(stdpop), ageadjust.direct(
-                 count=HealthySleepers, pop=Respondents, stdpop=StdPop, 
-                 conf.level = 0.95))) %>% t %>% as.data.table %>%
-    mutate(StateNum = state.nums, value = adj.rate * 100) %>% 
-    select(StateNum, value)) -> sleep.state
+suppressMessages(
+    sapply(state.nums, function(x)
+        with(
+            sleepers.grp[StateNum == x, ] %>%
+                inner_join(stdpop),
+            ageadjust.direct(
+                count = HealthySleepers,
+                pop = Respondents,
+                stdpop = StdPop,
+                conf.level = 0.95
+            )
+        )) %>% t %>% as.data.table %>%
+        mutate(StateNum = state.nums, value = adj.rate * 100) %>%
+        select(StateNum, value)
+) -> sleep.state
 
 #:-----------------------------------------------------------------------------:
 # Prepare map values data table and look it over before plotting
@@ -371,7 +394,7 @@ suppressMessages(sapply(state.nums, function(x)
 #              by = StateNum]
 
 # Prepare states data.table for use with cloroplethr by adding "region" column.
-suppressWarnings(states[,region := tolower(State)])
+suppressWarnings(states[, region := tolower(State)])
 
 # Merge in the state names for use when making the choropleth map.
 inner_join(states, sleep.state, by = "StateNum") %>%
@@ -385,7 +408,7 @@ tail(map.values)
 summary(map.values)
 
 # List the groups that will be used in the 5-color choropleth map.
-map.values[order(map.values$value),] %>%
+map.values[order(map.values$value), ] %>%
     mutate(group = cut2(value, g = 5)) %>% group_by(group) %>%
     dplyr::summarize(regions = n(),
                      mean_value = round(mean(value), 1)) -> groups
