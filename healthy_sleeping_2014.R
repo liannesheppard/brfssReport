@@ -155,6 +155,22 @@ all.sleepers[SLEPTIM1 >= 7 & X_AGE80 >= 18, 100*.N/num.resp]
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
 # :----------------------------------------------------------------------------:
 
+# There are several age variables in the dataset. Here is a summary of them
+# taken from Summary Matrix of Calculated Variables (CV) in the 2014 Data File,
+# http://www.cdc.gov/brfss/annual_data/2014/summary_matrix_14_version12.html
+#
+# Description or Result                          Output Variables
+# of Calculation                                 (In Final Data Set)
+# -------------------------------------------    -------------------
+# 18-24 and then 5-year age groupings to 80+.    _AGEG5YR
+# 18-64 and 65+ age groupings.                   _AGE65YR
+# 18-64 and 65+ 10 year age groupings.           _AGE_G
+# 18-80 age groupings (80=80+)                   _AGE80
+
+# We will use the _AGE80 variable for age adjustment, using 2000 US Standard 
+# Population totals for single ages up to 80 years of age, and then a grouped
+# Standard Population total for ages 80 and older (80=80+).
+
 # Exctract the sleeping health (SLEPTIM1), count total respondents and also the 
 # respondents who sleep at least 7 hours a day (SLEPTIM1 >= 7) by state and age.
 sleepers <- all.sleepers[X_AGE80 >= 18, list(Respondents=.N,
@@ -249,16 +265,38 @@ if (! file.exists(agesfile)) {
     ages <- read.csv(agesfile, header=TRUE, stringsAsFactors=FALSE)
 }
 
+# Collapse age values over 80 to create an "80+" age group, labeled "80".
+# This is to match the CDC's _AGE80 variable: "18-80 age groupings (80=80+)".
+# See: "Summary Matrix of Calculated Variables (CV) in the 2014 Data File",
+# http://www.cdc.gov/brfss/annual_data/2014/summary_matrix_14_version12.html
+# Codebook description for _AGE80 is: "Imputed Age value collapsed above 80"
+# See: http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf
+ages$StdPop[ages$Age == 80] <- sum(ages[ages$Age >= 80, "StdPop"])
+ages <- as.data.table(ages[ages$Age <= 80, ])
 
 # :----------------------------------------------------------------------------:
 # Calculate age-adjusted prevalence of healthy sleep duration by state
 # :----------------------------------------------------------------------------:
 
-# Merge with "sleepers" with "ages" to get standard population.
-sleepers.pop <- merge(sleepers, ages, by="Age")
+# The authors of the original paper report that:
+#
+# "The age-adjusted prevalence and 95% confidence interval (CI) of the 
+# recommended healthy sleep duration (>=7 hours) was calculated by state and 
+# selected characteristics, and adjusted to the 2000 projected U.S. population 
+# aged >= 18 years."
+# 
+# We will perform age-adjustment of the crude prevalence of healthy sleep 
+# duration among adult respondents using the _AGE80 variable by state (_STATE).
 
-# View first and last rows.
-sleepers.pop
+# Compare the count of respondents and 2000 US Standard Population by age.
+sleepers[, lapply(.SD, sum), by=Age] %>% inner_join(ages, by="Age") %>% 
+    melt("Age", c("Respondents", "StdPop"), "Type", "Count") %>% 
+    ggplot(., aes(Age, Count)) + geom_point() + geom_line() +
+    facet_grid(Type ~ ., scales="free_y") + 
+    ggtitle("Respondents and 2000 US Standard Population by Age (18 to 80=80+)")
+
+# Merge with "sleepers" with "ages" to get standard population.
+sleepers.pop <- inner_join(sleepers, ages, by="Age")
 
 # Create a wrapper function around the `ageadjust.direct()` function from
 # the epitools package.
@@ -281,17 +319,22 @@ sleepers.adj <- sapply(unique(sleepers.pop$StateNum),
 
 # Store the adjusted prevalence as a percentage in a new column, "value".
 sleepers.adj %>% mutate(value=adj.rate*100) %>% 
-    select(StateNum, value) -> sleep.state.adj
+    select(StateNum, value) -> sleep.state
 
 # :----------------------------------------------------------------------------:
 # Prepare map values data frame and look it over before plotting
 # :----------------------------------------------------------------------------:
 
+# Calculate crude prevalence of healthy sleepers per state as "value".
+# Note: Uncomment the next command to plot the non-age-adjusted prevalence.
+#sleep.state <- sleepers[,list(value=100*sum(HealthySleepers)/sum(Respondents)), 
+#                        by=StateNum]
+
 # Prepare states data.frame for use with cloroplethr by adding "region" column.
 states <- mutate(states, region=tolower(State))
 
 # Merge in the state names for use when making the choropleth map.
-merge(states, sleep.state.adj) %>% select(region, value) -> map.values
+merge(states, sleep.state) %>% select(region, value) -> map.values
 
 # View the first and last few rows and a summary.
 # Compare with the values in the State and % columns of TABLE 2 from
@@ -326,15 +369,6 @@ choro$set_num_colors(5)
 # By default, the map labels states with values from the "region" variable.
 # Remove the state labels to match the original map from the article.
 choro$show_labels <- FALSE
-
-# By default, we get a blue color palette, and the legend has value groups  
-# ordered from low to high. The map in the article uses the reverse order.
-# Reverse the order of the levels in the legend to match the original map.
-# This method requires us to reset the color palette to match the original.
-# NOTE: This causes Alaska to get the wrong color, so don't run this code. 
-#choro$ggplot_scale <- scale_fill_manual("",
-#    values=colorRampPalette(brewer.pal(5, "Blues"))(5),
-#    guide=guide_legend(reverse=TRUE))
 
 # Render the map with reversed, relocated, and resized legend.
 us.sleep.map <- choro$render() + guides(fill = guide_legend(reverse=TRUE)) +
