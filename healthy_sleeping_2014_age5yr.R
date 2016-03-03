@@ -205,7 +205,8 @@ prevalence
 
 # Respondents matches the "Unweighted sample of respondents" by age group. 
 # CrudePrevalence does *not* match the "%" column for age groups in Table 1.
-# Check age-adjusted prevalence later in this script.
+# The percentages we have calculated are a few percent higher, especially
+# in the last two age groups. Check age-adjusted prevalence below.
 
 #:-----------------------------------------------------------------------------:
 # Get US standard population totals by age group to use for age-adjustment
@@ -269,16 +270,15 @@ if (!file.exists(stdpopcsvfile)) {
     stdpop <- as.data.table(read.csv(stdpopcsvfile, header = TRUE))
 }
 
-# Set the variable type to factor.
-stdpop$AgeGroup <- factor(stdpop$AgeGroup)
-
 # Check age-adjusted prevalence of adult respondents who sleep >= 7 hours/day.
 # The CDC authors say, "A total of 65.2% of respondents reported a healthy 
 # sleep duration [>=7 hours]."
 with(inner_join(prevalence, stdpop), 
      ageadjust.direct(count=HealthySleepers, pop=Respondents, stdpop=StdPop, 
                       conf.level = 0.95))
-     
+
+# The age-adjusted rate is 66.8%, which is higher than reported in the article.
+
 #:-----------------------------------------------------------------------------:
 # Get state names to match up with the state codes in the BRFSS dataset
 #:-----------------------------------------------------------------------------:
@@ -334,79 +334,27 @@ if (!file.exists(statesfile)) {
 # Calculate age-adjusted prevalence of healthy sleep duration by state
 #:-----------------------------------------------------------------------------:
 
-# The authors of the original paper report that:
-#
-# "The age-adjusted prevalence and 95% confidence interval (CI) of the
-# recommended healthy sleep duration (>=7 hours) was calculated by state and
-# selected characteristics, and adjusted to the 2000 projected U.S. population
-# aged >= 18 years."
-#
-# There are several age variables in the dataset. Here is a summary of them
-# taken from Summary Matrix of Calculated Variables (CV) in the 2014 Data File,
-# http://www.cdc.gov/brfss/annual_data/2014/summary_matrix_14_version12.html
-#
-# Description or Result                          Output Variables
-# of Calculation                                 (In Final Data Set)
-# -------------------------------------------    -------------------
-# 18-24 and then 5-year age groupings to 80+.    _AGEG5YR
-# 18-64 and 65+ age groupings.                   _AGE65YR
-# 18-64 and 65+ 10 year age groupings.           _AGE_G
-# 18-80 age groupings (80=80+)                   _AGE80
-#
-# We will perform age-adjustment of the crude prevalence of healthy sleep
-# duration among adults using the _AGEG5YR variable grouped by state (_STATE).
-#
-# Although the authors of the CDC article did not specify which age variable
-# was used, we have shown (above) that using the _AGE5YR variable allows us to
-# calculate matching respondent counts.
-
-# Collapse the groups to match the standard population distribution.
+# Collapse age groups to match Distribution #9 of the US standard population, 
+# 2000, then calculate sums of respondent counts by state.
 sleepers %>% transform(group = cut(
     AgeGrp,
     breaks = c(1, 2, 4, 6, 10, Inf),
     right = FALSE,
     include.lowest = TRUE
-)) %>% rename(AgeGroup = group) -> sleepers.grp
+)) %>%
+    group_by(StateNum, group) %>%
+    summarize_each(funs(sum), HealthySleepers, Respondents) %>%
+    rename(AgeGroup = group) -> sleepers.grp
 levels(sleepers.grp$AgeGroup) <- age.groups
 
-# Compare the count of respondents and 2000 US Standard Population by age.
-# Merge with standard population distribution and plot with ggplot.
-sleepers.grp[, lapply(.SD, sum), by = AgeGroup] %>%
-    inner_join(stdpop, by = "AgeGroup") %>%
-    melt("AgeGroup", c("Respondents", "StdPop"), "Type", "Count") %>%
-    ggplot(., aes(AgeGroup, Count, group = 1)) + geom_point() + geom_line() +
-    facet_grid(Type ~ ., scales = "free_y") +
-    ggtitle("Respondents and Standard Population by Age Group")
-
-# Perform the merge again, but by state and age group.
-sleepers.pop <- inner_join(sleepers.grp, stdpop, by = "AgeGroup")
-
-# Create a wrapper function around the `ageadjust.direct()` function from
-# the epitools package.
-adjustAge <- function(state.num, data) {
-    # Age-adjust for respondents in a specific state.
-    adj <- as.vector(with(
-        data[data$StateNum == state.num,],
-        ageadjust.direct(
-            count = HealthySleepers,
-            pop = Respondents,
-            stdpop = StdPop,
-            conf.level = 0.95
-        )
-    ))
-    adj['StateNum'] <- state.num
-    names(adj) <-
-        c("crude.rate", "adj.rate", "lci", "uci", "StateNum")
-    return(adj)
-}
-
-# Calculate the age adjustment for the US standard population, 2000.
-sleepers.adj <- sapply(unique(sleepers.pop$StateNum),
-                       function(x)
-                           adjustAge(x, sleepers.pop)) %>% t %>% as.data.table
-
-# Store the adjusted prevalence as a percentage in a new column, "value".
-sleepers.adj %>% mutate(value = adj.rate * 100) %>%
+# Calculate the age adjustment for the US standard population, 2000, by state.
+state.nums <- unique(sleepers.grp$StateNum)
+sapply(state.nums, function(x) 
+    with(sleepers.grp[StateNum == x,] %>% 
+             inner_join(stdpop), ageadjust.direct(
+                 count=HealthySleepers, pop=Respondents, stdpop=StdPop, 
+                 conf.level = 0.95))) %>% t %>% as.data.table %>%
+    mutate(StateNum = state.nums, value = adj.rate * 100) %>% 
     select(StateNum, value) -> sleep.state
 
 #:-----------------------------------------------------------------------------:
