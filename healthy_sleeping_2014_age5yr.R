@@ -7,8 +7,9 @@
 #          You may choose any one of these, or higher versions thereof.
 #:-----------------------------------------------------------------------------:
 #
-# Tested to work on OS X Yosemite (10.10.5), R version 3.2.3 (2015-12-10).
-# Tested to work on Windows Server 2008 R2 SP1, R version 3.2.3 (2015-12-10).
+# Tested to work on: OS X Yosemite (10.10.5), R version 3.2.3 (2015-12-10).
+#                    Windows Server 2008 R2 SP1, R version 3.2.3 (2015-12-10).
+#                    Ubuntu Linux 14.04 LTS, R version 3.2.3 (2015-12-10).
 # 
 # Requires "pdftotext". See: http://www.foolabs.com/xpdf/download.html
 #
