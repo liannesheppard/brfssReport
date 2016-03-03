@@ -29,8 +29,8 @@
 # resources required. This script will get a zipped, SAS data file from the
 # CDC and extract and import it. It will also get the codebook for this dataset
 # from the CDC as a PDF and extract states and their codes from it. Lastly,
-# 2000 US Standard Population figures for ages 0-99 will be extracted from an
-# NIH webpage. Repeated execution of this script will used cached files.
+# 2000 US Standard Population "Distribution #9" will be extracted from an
+# CDC pdf file. Repeated execution of this script will used cached files.
 
 #:-----------------------------------------------------------------------------:
 # Clear workspace and load packages
@@ -130,7 +130,7 @@ if (!file.exists(allsleepersfile)) {
 }
 
 #:-----------------------------------------------------------------------------:
-# Perform sanity checks and subsetting
+# Perform sanity checks and subsetting. Compare respondent counts with article.
 #:-----------------------------------------------------------------------------:
 
 # Check the number of rows in the dataset. The BRFSS 2014 Survey Data page
@@ -160,19 +160,7 @@ all.sleepers <- all.sleepers[X_STATE != 66 & X_STATE != 72,]
 num.resp <- all.sleepers[X_AGEG5YR <= 13, .N]
 num.resp
 
-# Percent of these respondents who sleep at least 7 hours per 24-hour day.
-# The authors say, "A total of 65.2% of respondents reported a healthy sleep
-# duration [>=7 hours]." NOTE: Our calculation here is just a crude prevalence.
-all.sleepers[SLEPTIM1 >= 7 & X_AGEG5YR <= 13, 100 * .N / num.resp]
-
-# Sanity checks show respondent counts match BRFSS products but not the paper.
-#
-# Perhaps the discrepancy is due to a difference in software. The authors claim:
-#
-#   "Statistical software programs that account for the complex sampling design
-#    of the BRFSS were used for the analysis."
-#
-# Or maybe a different survey variable was used for respondent age.
+# Sanity checks show respondent counts match BRFSS products and the CDC paper.
 
 #:-----------------------------------------------------------------------------:
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
@@ -200,6 +188,7 @@ str(sleepers)
 sleepers
 
 # View the healthy sleepers and respondents by age group and crude prevalence.
+# Compare "Respondents" to Table 1., "Age group (yrs)", "No." in the CDC paper.
 sleepers %>% transform(group = cut(
     AgeGrp,
     breaks = c(1, 2, 4, 6, 10, Inf),
@@ -214,8 +203,11 @@ age.groups <- c("18-24", "25-34", "35-44", "45-64", ">=65")
 levels(prevalence$AgeGroup) <- age.groups
 prevalence
 
+# Respondents matches the "Unweighted sample of respondents" by age group. 
+# CrudePrevalence does *not* match the "%" column for age groups in Table 1.
+
 #:-----------------------------------------------------------------------------:
-# Get US standard population totals by single ages to use for age-adjustment
+# Get US standard population totals by age group to use for age-adjustment
 #:-----------------------------------------------------------------------------:
 
 # Get the 2000 US Standard Population (Census P25-1130), Distribution #9,
@@ -275,6 +267,13 @@ if (!file.exists(stdpopcsvfile)) {
 # Set the variable type to factor.
 stdpop$AgeGroup <- factor(stdpop$AgeGroup)
 
+# Check age-adjusted prevalence of adult respondents who sleep >= 7 hours/day.
+# The CDC authors say, "A total of 65.2% of respondents reported a healthy 
+# sleep duration [>=7 hours]."
+with(inner_join(prevalence, stdpop), 
+     ageadjust.direct(count=HealthySleepers, pop=Respondents, stdpop=StdPop, 
+                      conf.level = 0.95))
+     
 #:-----------------------------------------------------------------------------:
 # Get state names to match up with the state codes in the BRFSS dataset
 #:-----------------------------------------------------------------------------:
@@ -351,6 +350,10 @@ if (!file.exists(statesfile)) {
 #
 # We will perform age-adjustment of the crude prevalence of healthy sleep
 # duration among adults using the _AGEG5YR variable grouped by state (_STATE).
+#
+# Although the authors of the CDC article did not specify which age variable
+# was used, we have shown (above) that using the _AGE5YR variable allows us to
+# calculate matching respondent counts.
 
 # Collapse the groups to match the standard population distribution.
 sleepers %>% transform(group = cut(
@@ -392,11 +395,10 @@ adjustAge <- function(state.num, data) {
     return(adj)
 }
 
-# Calculate the single-age adjustment for the US standard population, 2000.
+# Calculate the age adjustment for the US standard population, 2000.
 sleepers.adj <- sapply(unique(sleepers.pop$StateNum),
                        function(x)
-                           adjustAge(x, sleepers.pop)) %>% t %>%
-    as.data.table
+                           adjustAge(x, sleepers.pop)) %>% t %>% as.data.table
 
 # Store the adjusted prevalence as a percentage in a new column, "value".
 sleepers.adj %>% mutate(value = adj.rate * 100) %>%
