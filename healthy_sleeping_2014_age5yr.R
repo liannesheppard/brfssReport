@@ -8,6 +8,8 @@
 #:-----------------------------------------------------------------------------:
 #
 # Tested to work on OS X Yosemite (10.10.5), R version 3.2.3 (2015-12-10).
+# Tested to work on Windows Server 2008 R2 SP1, R version 3.2.3 (2015-12-10).
+# 
 # Requires "pdftotext". See: http://www.foolabs.com/xpdf/download.html
 #
 # Data source: http://www.cdc.gov/brfss/annual_data/annual_2014.html
