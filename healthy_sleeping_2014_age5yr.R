@@ -42,10 +42,11 @@
 
 # Clear the workspace, unless you are running in knitr context.
 # See: https://support.rstudio.com/hc/en-us/articles/200552276
-# Example: rmarkdown::render("healthy_sleeping_2014.R", "pdf_document")
+# Example: rmarkdown::render("healthy_sleeping_2014_age5yr.R", "pdf_document")
 if (!isTRUE(getOption('knitr.in.progress'))) {
     closeAllConnections()
     rm(list = ls())
+    gc()
 }
 
 # Create a vector of package names for the packages we will need.
