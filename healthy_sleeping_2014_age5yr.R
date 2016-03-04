@@ -183,8 +183,8 @@ all.sleepers %>% transform(hrs = cut(
     include.lowest = TRUE
 )) -> sleep.grp
 levels(sleep.grp$hrs) <- c("0-5", "6", "7", "8", "9", "10-24")
-sleep.grp <- sleep.grp[, round(100*.N/sum(sleep.grp[, .N]), 1), by = hrs]
-sleep.grp[order(hrs)] %>% rename("Sleep (hours)" = hrs, "Prevalence (%)" = V1)
+sleep.grp[order(hrs), round(100*.N/sum(sleep.grp[, .N]), 1), by = hrs] %>% 
+    rename("Sleep (hours)" = hrs, "Prevalence (%)" = V1)
 
 # Results:
 # Sanity checks show respondent counts match BRFSS products and the CDC paper,
