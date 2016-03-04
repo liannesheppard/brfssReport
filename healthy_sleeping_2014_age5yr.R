@@ -81,8 +81,8 @@ for (pkg in pkgs) {
 }
 
 # Create the data folder if it does not already exist.
-datadir <- "data"
-dir.create(file.path(datadir),
+data.dir <- "data"
+dir.create(file.path(data.dir),
            showWarnings = FALSE,
            recursive = TRUE)
 
@@ -93,37 +93,37 @@ dir.create(file.path(datadir),
 # Use cached data files, if present, or download and extract as needed.
 # Note: If you want the script to get all the data directly from the sources
 #       on the web, just delete the "data" folder before running this script.
-allsleepersfile <- 'data/state_age5yr_sleep_2014.csv'
-if (!file.exists(allsleepersfile)) {
+all.sleepers.file <- 'data/state_age5yr_sleep_2014.csv'
+if (!file.exists(all.sleepers.file)) {
     # Download the BRFSS data for 2014 from the CDC as a zipped SAS file.
-    dataurl <-
+    data.url <-
         'http://www.cdc.gov/brfss/annual_data/2014/files/LLCP2014XPT.ZIP'
-    datafile <- 'data/LLCP2014XPT.ZIP'
-    if (!file.exists(datafile)) {
-        download.file(dataurl, datafile, mode = 'wb')
+    data.file <- 'data/LLCP2014XPT.ZIP'
+    if (!file.exists(data.file)) {
+        download.file(data.url, data.file, mode = 'wb')
     }
     
     # Extract the SAS data file from the zip file.
-    sasfile <- 'data/LLCP2014.XPT'
-    if (!file.exists(sasfile)) {
-        unzip(datafile, exdir = 'data')
+    sas.file <- 'data/LLCP2014.XPT'
+    if (!file.exists(sas.file)) {
+        unzip(data.file, exdir = 'data')
         # Remove the space character at the end of filename if necessary.
         # This was found to be an issue in the 2014 BRFSS SAS data file.
-        if (file.exists(paste(sasfile, " ", sep = ""))) {
-            file.rename(from = paste(sasfile, " ", sep = ""),
-                        to = sasfile)
+        if (file.exists(paste(sas.file, " ", sep = ""))) {
+            file.rename(from = paste(sas.file, " ", sep = ""),
+                        to = sas.file)
         }
     }
     
     # Import SAS file. Use data.table for improved performance over data.frame.
     # Note:  For SAS variables that start with the underscore character, R will
     # put an X at the beginning of the variable name as the data is imported.
-    brfss <- as.data.table(read.xport(sasfile))
+    brfss <- as.data.table(read.xport(sas.file))
     
     # Subset by the data we need to create the choropleth and export to CSV.
     all.sleepers <- brfss[, list(X_STATE, X_AGEG5YR, SLEPTIM1)]
     write.csv(all.sleepers,
-              allsleepersfile,
+              all.sleepers.file,
               row.names = FALSE,
               fileEncoding = "UTF-8")
     
@@ -132,7 +132,7 @@ if (!file.exists(allsleepersfile)) {
 } else {
     # Read the CSV into a data.table.
     all.sleepers <-
-        as.data.table(read.csv(allsleepersfile, header = TRUE))
+        as.data.table(read.csv(all.sleepers.file, header = TRUE))
 }
 
 #:-----------------------------------------------------------------------------:
@@ -253,18 +253,18 @@ prevalence
 #       pdftotext at: http://www.foolabs.com/xpdf/download.html
 
 # Download the age distribution tables from the CDC as a PDF file.
-stdpopurl <-
+stdpop.url <-
     'http://www.cdc.gov/nchs/data/statnt/statnt20.pdf'
-stdpopfile <- 'data/statnt20.pdf'
-if (!file.exists(stdpopfile)) {
-    download.file(stdpopurl, stdpopfile, mode = 'wb')
+stdpop.file <- 'data/statnt20.pdf'
+if (!file.exists(stdpop.file)) {
+    download.file(stdpop.url, stdpop.file, mode = 'wb')
 }
 
-stdpopcsvfile <- 'data/stdpop.csv'
-if (!file.exists(stdpopcsvfile)) {
+stdpop.csv.file <- 'data/stdpop.csv'
+if (!file.exists(stdpop.csv.file)) {
     # Read PDF into a list.
     pdf <- readPDF(control = list(text = "-layout"))(
-        elem = list(uri = stdpopfile),
+        elem = list(uri = stdpop.file),
         language = "en",
         id = "id1"
     )
@@ -292,12 +292,12 @@ if (!file.exists(stdpopcsvfile)) {
     
     # Write to a file for later use.
     write.csv(stdpop,
-              stdpopcsvfile,
+              stdpop.csv.file,
               row.names = FALSE,
               fileEncoding = "UTF-8")
 } else {
     # Read the CSV into a data.table.
-    stdpop <- as.data.table(read.csv(stdpopcsvfile, header = TRUE))
+    stdpop <- as.data.table(read.csv(stdpop.csv.file, header = TRUE))
 }
 
 # The CDC authors say, "Overall, 65.2% reported the recommended healthy sleep 
@@ -325,11 +325,11 @@ with(
 #:-----------------------------------------------------------------------------:
 
 # Download the BRFSS codebook for 2014 from the CDC as a PDF file.
-codebkurl <-
+codebk.url <-
     'http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf'
-codebkfile <- 'data/codebook14_llcp.pdf'
-if (!file.exists(codebkfile)) {
-    download.file(codebkurl, codebkfile, mode = 'wb')
+codebk.file <- 'data/codebook14_llcp.pdf'
+if (!file.exists(codebk.file)) {
+    download.file(codebk.url, codebk.file, mode = 'wb')
 }
 
 # Parse the codebook to get the state names and their codes.
@@ -337,12 +337,12 @@ if (!file.exists(codebkfile)) {
 # Note: readPDF() requires that you have pdftotext installed somewhere on your
 #       system in your PATH so that R will be able to execute it. You may find
 #       pdftotext at: http://www.foolabs.com/xpdf/download.html
-statesfile <- 'data/states_list.csv'
-if (!file.exists(statesfile)) {
+states.file <- 'data/states_list.csv'
+if (!file.exists(states.file)) {
     # Read PDF into a list.
     pdf <-
         suppressWarnings(readPDF(control = list(text = "-layout"))(
-            elem = list(uri = codebkfile),
+            elem = list(uri = codebk.file),
             language = "en",
             id = "id1"
         ))
@@ -366,13 +366,13 @@ if (!file.exists(statesfile)) {
                     header = FALSE)
     names(states) <- c("StateNum", "State")
     write.csv(states,
-              statesfile,
+              states.file,
               row.names = FALSE,
               fileEncoding = "UTF-8")
     
 } else {
     # Read the CSV into a data.table.
-    states <- as.data.table(read.csv(statesfile, header = TRUE))
+    states <- as.data.table(read.csv(states.file, header = TRUE))
 }
 
 #:-----------------------------------------------------------------------------:
