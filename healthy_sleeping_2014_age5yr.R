@@ -163,10 +163,31 @@ all.sleepers <- all.sleepers[X_STATE != 66 & X_STATE != 72, ]
 # Risk Factor Surveillance System (BRFSS) to determine the prevalence of a
 # healthy sleep duration (>=7 hours) among 444,306 adult respondents in all
 # 50 states and the District of Columbia."
-num.resp <- all.sleepers[X_AGEG5YR <= 13, .N]
-num.resp
+all.sleepers <- all.sleepers[X_AGEG5YR <= 13, ]
+nrow(all.sleepers)
 
-# Sanity checks show respondent counts match BRFSS products and the CDC paper.
+# Check crude prevalence of adult respondents who sleep >= 7 hours/day.
+# The CDC authors say, "Overall, 65.2% reported the recommended healthy sleep 
+# duration (age-adjusted prevalence = 64.9%)"
+round(all.sleepers[SLEPTIM1 >=7, 100*.N/all.sleepers[, .N]], 1)
+
+# Count respondents by sleep duration groups mentioned in article.
+# The authors state, "Among 444,306 respondents, 11.8% reported a sleep 
+# duration <=5 hours, 23.0% reported 6 hours, 29.5% reported 7 hours, 27.7% 
+# reported 8 hours, 4.4% reported 9 hours, and 3.6% reported >=10 hours."
+all.sleepers %>% transform(group = cut(
+    SLEPTIM1,
+    breaks = c(0, 6, 7, 8, 9, 10, Inf),
+    right = FALSE,
+    include.lowest = TRUE
+)) %>% rename(Hours = group) -> sleep.grp
+levels(sleep.grp$Hours) <- c("<=5", "6", "7", "8", "9", ">=10")
+sleep.grp <- sleep.grp[, round(100*.N/sum(sleep.grp[, .N]), 1), by = Hours]
+sleep.grp[order(Hours)] %>% rename("%" = V1)
+
+# Results:
+# Sanity checks show respondent counts match BRFSS products and the CDC paper,
+# but sleep duration rates do not match those reported in the CDC paper.
 
 #:-----------------------------------------------------------------------------:
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
@@ -174,7 +195,7 @@ num.resp
 
 # Exctract the sleeping health (SLEPTIM1), count total respondents and also the
 # respondents who sleep at least 7 hours a day (SLEPTIM1 >= 7) by state and age.
-sleepers <- all.sleepers[X_AGEG5YR <= 13,
+sleepers <- all.sleepers[,
                          list(Respondents = .N,
                               HealthySleepers = sum(SLEPTIM1 >= 7,
                                                     na.rm = TRUE)),
@@ -279,9 +300,13 @@ if (!file.exists(stdpopcsvfile)) {
     stdpop <- as.data.table(read.csv(stdpopcsvfile, header = TRUE))
 }
 
+# The CDC authors say, "Overall, 65.2% reported the recommended healthy sleep 
+# duration (age-adjusted prevalence = 64.9%)"
+
+# Check crude prevalence of adult respondents who sleep >= 7 hours/day.
+round(prevalence[,100*sum(HealthySleepers)/sum(Respondents)], 1)
+
 # Check age-adjusted prevalence of adult respondents who sleep >= 7 hours/day.
-# The CDC authors say, "A total of 65.2% of respondents reported a healthy
-# sleep duration [>=7 hours]."
 with(
     inner_join(prevalence, stdpop),
     ageadjust.direct(
@@ -292,7 +317,8 @@ with(
     )
 )
 
-# The age-adjusted rate is 66.8%, which is higher than reported in the article.
+# As with crude prevalence calculated earlier, the age-adjusted prevalence
+# of healthy sleep duration does not match that reported in the article.
 
 #:-----------------------------------------------------------------------------:
 # Get state names to match up with the state codes in the BRFSS dataset
