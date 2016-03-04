@@ -93,18 +93,18 @@ dir.create(file.path(data.dir),
 # Use cached data files, if present, or download and extract as needed.
 # Note: If you want the script to get all the data directly from the sources
 #       on the web, just delete the "data" folder before running this script.
-all.sleepers.file <- 'data/state_age5yr_sleep_2014.csv'
+all.sleepers.file <- paste(data.dir, 'state_age5yr_sleep_2014.csv', sep = '/')
 if (!file.exists(all.sleepers.file)) {
     # Download the BRFSS data for 2014 from the CDC as a zipped SAS file.
     data.url <-
         'http://www.cdc.gov/brfss/annual_data/2014/files/LLCP2014XPT.ZIP'
-    data.file <- 'data/LLCP2014XPT.ZIP'
+    data.file <- paste(data.dir, 'LLCP2014XPT.ZIP', sep = '/')
     if (!file.exists(data.file)) {
         download.file(data.url, data.file, mode = 'wb')
     }
     
     # Extract the SAS data file from the zip file.
-    sas.file <- 'data/LLCP2014.XPT'
+    sas.file <- paste(data.dir, 'LLCP2014.XPT', sep = '/')
     if (!file.exists(sas.file)) {
         unzip(data.file, exdir = 'data')
         # Remove the space character at the end of filename if necessary.
@@ -255,12 +255,12 @@ prevalence
 # Download the age distribution tables from the CDC as a PDF file.
 stdpop.url <-
     'http://www.cdc.gov/nchs/data/statnt/statnt20.pdf'
-stdpop.file <- 'data/statnt20.pdf'
+stdpop.file <- paste(data.dir, 'statnt20.pdf', sep = '/')
 if (!file.exists(stdpop.file)) {
     download.file(stdpop.url, stdpop.file, mode = 'wb')
 }
 
-stdpop.csv.file <- 'data/stdpop.csv'
+stdpop.csv.file <- paste(data.dir, 'stdpop.csv', sep = '/')
 if (!file.exists(stdpop.csv.file)) {
     # Read PDF into a list.
     pdf <- readPDF(control = list(text = "-layout"))(
@@ -327,7 +327,7 @@ with(
 # Download the BRFSS codebook for 2014 from the CDC as a PDF file.
 codebk.url <-
     'http://www.cdc.gov/brfss/annual_data/2014/pdf/codebook14_llcp.pdf'
-codebk.file <- 'data/codebook14_llcp.pdf'
+codebk.file <- paste(data.dir, 'codebook14_llcp.pdf', sep = '/')
 if (!file.exists(codebk.file)) {
     download.file(codebk.url, codebk.file, mode = 'wb')
 }
@@ -337,7 +337,7 @@ if (!file.exists(codebk.file)) {
 # Note: readPDF() requires that you have pdftotext installed somewhere on your
 #       system in your PATH so that R will be able to execute it. You may find
 #       pdftotext at: http://www.foolabs.com/xpdf/download.html
-states.file <- 'data/states_list.csv'
+states.file <- paste(data.dir, 'states_list.csv', sep = '/')
 if (!file.exists(states.file)) {
     # Read PDF into a list.
     pdf <-
