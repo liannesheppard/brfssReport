@@ -23,17 +23,18 @@
 #
 # The figure to reproduce is titled:
 #
-# FIGURE. Age-adjusted percentage of adults who reported >=7 hours of sleep
-# per 24-hour period, by state -- Behavioral Risk Factor Surveillance System,
-# United States, 2014
+#   FIGURE. Age-adjusted percentage of adults who reported >=7 hours of sleep
+#   per 24-hour period, by state -- Behavioral Risk Factor Surveillance System,
+#   United States, 2014
 #
 # For maximum reproducibility and portability, data will be downloaded from
 # the web and processed within this script, with no additional steps or other
-# resources required. This script will get a zipped, SAS data file from the
+# resources required. This script will get a zipped SAS data file from the
 # CDC and extract and import it. It will also get the codebook for this dataset
 # from the CDC as a PDF and extract states and their codes from it. Lastly,
-# 2000 US Standard Population "Distribution #9" will be extracted from an
-# CDC pdf file. Repeated execution of this script will used cached files.
+# 2000 US Standard Population "Distribution #9" will be extracted from a
+# CDC pdf file. Repeated execution of this script will used cached files 
+# to avoid repeating these time- and bandwidth-consuming steps.
 
 #:-----------------------------------------------------------------------------:
 # Clear workspace and load packages
@@ -441,7 +442,7 @@ us.sleep.map <-
     theme(legend.position = c(0.87, 0.17),
           legend.key.size = unit(.60, "cm"))
 
-# Add DC to the map as a square floating offshore above the legend.
+# Add DC to the map as a small, square tile, located above the legend.
 us.sleep.map <- us.sleep.map +
     geom_point(
         data = dc,
