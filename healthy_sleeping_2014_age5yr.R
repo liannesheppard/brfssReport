@@ -176,15 +176,15 @@ round(all.sleepers[SLEPTIM1 >=7, 100*.N/all.sleepers[, .N]], 1)
 # The authors state, "Among 444,306 respondents, 11.8% reported a sleep 
 # duration <=5 hours, 23.0% reported 6 hours, 29.5% reported 7 hours, 27.7% 
 # reported 8 hours, 4.4% reported 9 hours, and 3.6% reported >=10 hours."
-all.sleepers %>% transform(group = cut(
+all.sleepers %>% transform(hrs = cut(
     SLEPTIM1,
     breaks = c(0, 6, 7, 8, 9, 10, Inf),
     right = FALSE,
     include.lowest = TRUE
-)) %>% rename(Hours = group) -> sleep.grp
-levels(sleep.grp$Hours) <- c("<=5", "6", "7", "8", "9", ">=10")
-sleep.grp <- sleep.grp[, round(100*.N/sum(sleep.grp[, .N]), 1), by = Hours]
-sleep.grp[order(Hours)] %>% rename("%" = V1)
+)) -> sleep.grp
+levels(sleep.grp$hrs) <- c("0-5", "6", "7", "8", "9", "10-24")
+sleep.grp <- sleep.grp[, round(100*.N/sum(sleep.grp[, .N]), 1), by = hrs]
+sleep.grp[order(hrs)] %>% rename("Sleep (hours)" = hrs, "Prevalence (%)" = V1)
 
 # Results:
 # Sanity checks show respondent counts match BRFSS products and the CDC paper,
