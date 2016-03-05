@@ -206,6 +206,7 @@ sleep.grp[order(hrs), round(100*.N/sum(sleep.grp[, .N]), 1), by = hrs] %>%
 # See also: http://www.cdc.gov/brfss/annual_data/2014/pdf/overview_2014.pdf,
 #   "Data Processing" and "Weighting the Data". Quote: "For more information, 
 #   see the Calculated Variables and Risk Factors in Data Files document."
+# See also: http://www.cdc.gov/brfss/annual_data/2014/pdf/weighting-data.pdf
 
 #:-----------------------------------------------------------------------------:
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
