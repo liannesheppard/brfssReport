@@ -191,22 +191,12 @@ sleep.grp[order(hrs), round(100*.N/sum(sleep.grp[, .N]), 1), by = hrs] %>%
 # Sanity checks show respondent counts match BRFSS products and the CDC paper,
 # but sleep duration rates do not match those reported in the CDC paper.
 #
-# The authors of the paper state, "BRFSS is conducted collaboratively by state 
-# health departments and CDC (6) among both landline and cell phone respondents, 
-# and data are weighted to state population estimates."
+# The differences are probably due to our use of unweighted data. The CDC uses
+# a complex "raking weighting methodology" based on population characteristics.
+# See: http://www.cdc.gov/brfss/annual_data/2014/pdf/weighting-data.pdf
 #
-# The differences are probably due to the fact that we did not perform any
-# weighting of our results. 
-#
-# For the purposes of this exercise, we will perform age-adjustment, but we
-# will not perform any other form of weighting.
-#
-# See: http://www.cdc.gov/brfss/about/brfss_faq.htm, Question #15. "How are 
-#   BRFSS data weighted? What variables are used when weighting BRFSS data?"
-# See also: http://www.cdc.gov/brfss/annual_data/2014/pdf/overview_2014.pdf,
-#   "Data Processing" and "Weighting the Data". Quote: "For more information, 
-#   see the Calculated Variables and Risk Factors in Data Files document."
-# See also: http://www.cdc.gov/brfss/annual_data/2014/pdf/weighting-data.pdf
+# For the purposes of this exercise, we will perform age-adjustment, but we will
+# not weight our data by response rates, population estimates, or other factors.
 
 #:-----------------------------------------------------------------------------:
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
