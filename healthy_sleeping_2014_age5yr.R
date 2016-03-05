@@ -184,11 +184,24 @@ all.sleepers %>% transform(hrs = cut(
 )) -> sleep.grp
 levels(sleep.grp$hrs) <- c("0-5", "6", "7", "8", "9", "10-24")
 sleep.grp[order(hrs), round(100*.N/sum(sleep.grp[, .N]), 1), by = hrs] %>% 
-    rename("Sleep (hours per day)" = hrs, "Respondents (% of total)" = V1)
+    rename("Sleep (hours/day)" = hrs, "Respondents (%)" = V1)
 
 # Results:
+#
 # Sanity checks show respondent counts match BRFSS products and the CDC paper,
 # but sleep duration rates do not match those reported in the CDC paper.
+#
+# The differences are probably due to the fact that we did not perform any
+# weighting of our results. The CDC claims to use a complex weighting system.
+#
+# See: http://www.cdc.gov/brfss/about/brfss_faq.htm, Question #15. "How are 
+#   BRFSS data weighted? What variables are used when weighting BRFSS data?"
+# See also: http://www.cdc.gov/brfss/annual_data/2014/pdf/overview_2014.pdf,
+#   "Data Processing" and "Weighting the Data". Quote: "For more information, 
+#   see the Calculated Variables and Risk Factors in Data Files document."
+#
+# For the purposes of this exercise, we will perform age-adjustment, but we
+# will not perform any other form of weighting.
 
 #:-----------------------------------------------------------------------------:
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
