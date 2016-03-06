@@ -1,54 +1,54 @@
-"StateNum","State","Pct"
-1,"Alabama",1.86
-2,"Alaska",0.94
-4,"Arizona",1.5
-5,"Arkansas",0.22
-6,"California",2.05
-8,"Colorado",0.91
-9,"Connecticut",1.89
-10,"Delaware",1.66
-11,"District of Columbia",1.14
-12,"Florida",0.29
-13,"Georgia",0.22
-15,"Hawaii",6.37
-16,"Idaho",3.07
-17,"Illinois",0.45
-18,"Indiana",0.48
-19,"Iowa",3.98
-20,"Kansas",2.02
-21,"Kentucky",0.96
-22,"Louisiana",0.88
-23,"Maine",1.37
-24,"Maryland",1.42
-25,"Massachusetts",0.43
-26,"Michigan",1.87
-27,"Minnesota",2.16
-28,"Mississippi",3.1
-29,"Missouri",1.69
-30,"Montana",0.91
-31,"Nebraska",1.88
-32,"Nevada",0.32
-33,"New Hampshire",0.57
-34,"New Jersey",0.87
-35,"New Mexico",0.43
-36,"New York",2.8
-37,"North Carolina",0.64
-38,"North Dakota",6.25
-39,"Ohio",2.35
-40,"Oklahoma",1.82
-41,"Oregon",3.61
-42,"Pennsylvania",1.19
-44,"Rhode Island",1.25
-45,"South Carolina",4.06
-46,"South Dakota",0.34
-47,"Tennessee",1.51
-48,"Texas",0.26
-49,"Utah",2.04
-50,"Vermont",8.01
-51,"Virginia",0.83
-53,"Washington",0.2
-54,"West Virginia",2.62
-55,"Wisconsin",2.2
-56,"Wyoming",0.59
-66,"Guam",1.79
-72,"Puerto Rico",0.18
+"StateNum","State","Frequency"
+1,"Alabama",8652
+2,"Alaska",4388
+4,"Arizona",14867
+5,"Arkansas",5258
+6,"California",8832
+8,"Colorado",13399
+9,"Connecticut",7950
+10,"Delaware",4300
+11,"District of Columbia",4074
+12,"Florida",9821
+13,"Georgia",6351
+15,"Hawaii",7247
+16,"Idaho",5487
+17,"Illinois",5052
+18,"Indiana",11530
+19,"Iowa",8130
+20,"Kansas",13743
+21,"Kentucky",11197
+22,"Louisiana",6781
+23,"Maine",9137
+24,"Maryland",12569
+25,"Massachusetts",15654
+26,"Michigan",8466
+27,"Minnesota",16419
+28,"Mississippi",4205
+29,"Missouri",7081
+30,"Montana",7502
+31,"Nebraska",22420
+32,"Nevada",3763
+33,"New Hampshire",6192
+34,"New Jersey",13045
+35,"New Mexico",8937
+36,"New York",6865
+37,"North Carolina",7289
+38,"North Dakota",7786
+39,"Ohio",10933
+40,"Oklahoma",8448
+41,"Oregon",5227
+42,"Pennsylvania",11000
+44,"Rhode Island",6450
+45,"South Carolina",11027
+46,"South Dakota",7401
+47,"Tennessee",5142
+48,"Texas",15436
+49,"Utah",15006
+50,"Vermont",6475
+51,"Virginia",9472
+53,"Washington",10092
+54,"West Virginia",6199
+55,"Wisconsin",7045
+56,"Wyoming",6416
+66,"Guam",2518
+72,"Puerto Rico",5988

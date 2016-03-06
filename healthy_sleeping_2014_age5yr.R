@@ -365,15 +365,15 @@ if (!file.exists(states.file)) {
     
     # Parse the lines to get codes and state names into CSV format.
     states.csv <-
-        gsub("^\\s+(\\d+)\\s+(\\w+(?:\\s\\w+)*).*(\\d+\\.\\d+).*$",
-             "\\1,\\2,\\3",
+        gsub("^\\s+(\\d+)\\s+(\\w+(?:\\s\\w+)*)\\D+(\\d+),(\\d+).*$",
+             "\\1,\\2,\\3\\4",
              states.str)
     
     # Read into a data.table, label columns and write to a file for later use.
     states <- fread(paste(states.csv, collapse = "\n"),
                     sep = ",",
                     header = FALSE)
-    names(states) <- c("StateNum", "State", "Pct")
+    names(states) <- c("StateNum", "State", "Frequency")
     write.csv(states,
               states.file,
               row.names = FALSE,
