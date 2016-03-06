@@ -1,54 +1,54 @@
-"StateNum","State"
-1,"Alabama"
-2,"Alaska"
-4,"Arizona"
-5,"Arkansas"
-6,"California"
-8,"Colorado"
-9,"Connecticut"
-10,"Delaware"
-11,"District of Columbia"
-12,"Florida"
-13,"Georgia"
-15,"Hawaii"
-16,"Idaho"
-17,"Illinois"
-18,"Indiana"
-19,"Iowa"
-20,"Kansas"
-21,"Kentucky"
-22,"Louisiana"
-23,"Maine"
-24,"Maryland"
-25,"Massachusetts"
-26,"Michigan"
-27,"Minnesota"
-28,"Mississippi"
-29,"Missouri"
-30,"Montana"
-31,"Nebraska"
-32,"Nevada"
-33,"New Hampshire"
-34,"New Jersey"
-35,"New Mexico"
-36,"New York"
-37,"North Carolina"
-38,"North Dakota"
-39,"Ohio"
-40,"Oklahoma"
-41,"Oregon"
-42,"Pennsylvania"
-44,"Rhode Island"
-45,"South Carolina"
-46,"South Dakota"
-47,"Tennessee"
-48,"Texas"
-49,"Utah"
-50,"Vermont"
-51,"Virginia"
-53,"Washington"
-54,"West Virginia"
-55,"Wisconsin"
-56,"Wyoming"
-66,"Guam"
-72,"Puerto Rico"
+"StateNum","State","Pct"
+1,"Alabama",1.86
+2,"Alaska",0.94
+4,"Arizona",1.5
+5,"Arkansas",0.22
+6,"California",2.05
+8,"Colorado",0.91
+9,"Connecticut",1.89
+10,"Delaware",1.66
+11,"District of Columbia",1.14
+12,"Florida",0.29
+13,"Georgia",0.22
+15,"Hawaii",6.37
+16,"Idaho",3.07
+17,"Illinois",0.45
+18,"Indiana",0.48
+19,"Iowa",3.98
+20,"Kansas",2.02
+21,"Kentucky",0.96
+22,"Louisiana",0.88
+23,"Maine",1.37
+24,"Maryland",1.42
+25,"Massachusetts",0.43
+26,"Michigan",1.87
+27,"Minnesota",2.16
+28,"Mississippi",3.1
+29,"Missouri",1.69
+30,"Montana",0.91
+31,"Nebraska",1.88
+32,"Nevada",0.32
+33,"New Hampshire",0.57
+34,"New Jersey",0.87
+35,"New Mexico",0.43
+36,"New York",2.8
+37,"North Carolina",0.64
+38,"North Dakota",6.25
+39,"Ohio",2.35
+40,"Oklahoma",1.82
+41,"Oregon",3.61
+42,"Pennsylvania",1.19
+44,"Rhode Island",1.25
+45,"South Carolina",4.06
+46,"South Dakota",0.34
+47,"Tennessee",1.51
+48,"Texas",0.26
+49,"Utah",2.04
+50,"Vermont",8.01
+51,"Virginia",0.83
+53,"Washington",0.2
+54,"West Virginia",2.62
+55,"Wisconsin",2.2
+56,"Wyoming",0.59
+66,"Guam",1.79
+72,"Puerto Rico",0.18
