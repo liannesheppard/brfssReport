@@ -329,6 +329,12 @@ with(
 # As with crude prevalence calculated earlier, the age-adjusted prevalence
 # of healthy sleep duration does not match that reported in the article.
 
+# The authors state, "The age-adjusted prevalence and 95% confidence interval 
+# (CI) of the recommended healthy sleep duration (>= 7 hours) was calculated by 
+# state and selected characteristics, and adjusted to the 2000 projected U.S. 
+# population aged >= 18 years." We only adjusted by age, and did not apply
+# weights for any other factors, such as sampling frequency or state population.
+
 #:-----------------------------------------------------------------------------:
 # Get state names to match up with the state codes in the BRFSS dataset
 #:-----------------------------------------------------------------------------:
