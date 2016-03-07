@@ -195,8 +195,13 @@ sleep.grp[order(hrs), round(100*.N/sum(sleep.grp[, .N]), 1), by = hrs] %>%
 # a complex "raking weighting methodology" based on population characteristics.
 # See: http://www.cdc.gov/brfss/annual_data/2014/pdf/weighting-data.pdf
 #
-# We will only perform age-adjustment in this analysis. Consider weighting on 
-# response rates and population estimates to better match the CDC results.
+# From the article: "Statistical software programs that account for the complex 
+# sampling design of the BRFSS were used for the analysis." We presume that
+# includes the software that performs the raking weighting methodology".
+#
+# The article does not provide much more detail about the methods or software.
+# We will only perform age-adjustment in this analysis. Consider also weighting 
+# on response rates and population estimates to better match the CDC results.
 
 #:-----------------------------------------------------------------------------:
 # Aggregate by state and age to get counts and prevalence of healthy sleepers
