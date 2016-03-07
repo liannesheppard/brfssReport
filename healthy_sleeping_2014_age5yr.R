@@ -370,21 +370,24 @@ if (!file.exists(states.file)) {
     # Read the content into a vector of strings. (Adjust index as needed.)
     states.raw <- content(pdf)[19:89]
     
-    # Filter out the lines which do not contain states and their codes.
-    states.str <-
-        states.raw[grepl("^\\s{2,6}\\d{1,}\\s+", states.raw)]
-    
     # Parse the lines to get codes and state names into CSV format.
-    states.csv <-
-        gsub("^\\s+(\\d+)\\s+(\\w+(?:\\s\\w+)*)\\D+(\\d+),(\\d+).*$",
-             "\\1,\\2,\\3\\4",
-             states.str)
+    flt <- "^\\s{2,6}\\d{1,}\\s+"
+    re <- "^\\s+(\\d+)\\s+(\\w+(?:\\s\\w+)*)\\D+(\\d+),(\\d+)\\D+([0-9.]+).*$"
+    repl <- "\\1,\\2,\\3\\4,\\5"
+    states.csv <- gsub(re, repl, states.raw[grepl(flt, states.raw)])
+    
+    # Parse the lines to get weighted percentage and save as vector.
+    flt <- "(?:\\d{1,2}\\.\\d{2}|^\\s+)\\s+\\d{1,2}\\.\\d{2}$"
+    re <- "^.*\\s+([0-9.]+)$"
+    repl <- "\\1"
+    weighted.pct <- gsub(re, repl, states.raw[grepl(flt, states.raw)])
     
     # Read into a data.table, label columns and write to a file for later use.
     states <- fread(paste(states.csv, collapse = "\n"),
                     sep = ",",
                     header = FALSE)
-    names(states) <- c("StateNum", "State", "Frequency")
+    states$WtPct <- weighted.pct
+    names(states) <- c("StateNum", "State", "Frequency", "Pct", "WtPct")
     write.csv(states,
               states.file,
               row.names = FALSE,
