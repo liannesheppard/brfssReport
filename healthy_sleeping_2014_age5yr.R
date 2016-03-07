@@ -386,7 +386,7 @@ if (!file.exists(states.file)) {
     states <- fread(paste(states.csv, collapse = "\n"),
                     sep = ",",
                     header = FALSE)
-    states$WtPct <- weighted.pct
+    states$WtPct <- as.numeric(weighted.pct)
     names(states) <- c("StateNum", "State", "Frequency", "Pct", "WtPct")
     write.csv(states,
               states.file,
