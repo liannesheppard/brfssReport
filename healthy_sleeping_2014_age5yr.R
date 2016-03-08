@@ -49,37 +49,42 @@ if (!isTRUE(getOption('knitr.in.progress'))) {
     gc()
 }
 
+# Function: Install packages (if necessary).
+install.pkgs <- functionIpkgs) {
+  for (pkg in pkgs) {
+      if (!suppressWarnings(require(pkg, character.only = TRUE))) {
+          install.packages(pkg, repos = "http://cran.fhcrc.org",
+                           dependencies = TRUE)
+          if (!suppressWarnings(require(pkg, character.only = TRUE))) {
+              stop(paste(c(
+                  "Can't load package: ", pkg, "!"
+              ), sep = ""))
+          }
+      }
+  }
+}
+
 # Create a vector of package names for the packages we will need.
 pkgs <- c(
-    "foreign",
-    "data.table",
-    "dplyr",
-    "tm",
-    "XML",
-    "epitools",
-    "Hmisc",
-    "sp",
-    "maps",
-    "choroplethrMaps",
-    "choroplethr",
-    "RColorBrewer",
-    "ggplot2",
-    "grid",
-    "gridExtra"
+  "foreign",
+  "data.table",
+  "dplyr",
+  "tm",
+  "XML",
+  "epitools",
+  "Hmisc",
+  "sp",
+  "maps",
+  "choroplethrMaps",
+  "choroplethr",
+  "RColorBrewer",
+  "ggplot2",
+  "grid",
+  "gridExtra"
 )
 
-# Install packages (if necessary).
-for (pkg in pkgs) {
-    if (!suppressWarnings(require(pkg, character.only = TRUE))) {
-        install.packages(pkg, repos = "http://cran.fhcrc.org",
-                         dependencies = TRUE)
-        if (!suppressWarnings(require(pkg, character.only = TRUE))) {
-            stop(paste(c(
-                "Can't load package: ", pkg, "!"
-            ), sep = ""))
-        }
-    }
-}
+# Load packages, installing as needed.
+install.pkgs(pkgs)
 
 # Create the data folder if it does not already exist.
 data.dir <- "data"
