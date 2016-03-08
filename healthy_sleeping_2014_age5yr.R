@@ -50,7 +50,7 @@ if (!isTRUE(getOption('knitr.in.progress'))) {
 }
 
 # Function: Install packages (if necessary).
-install.pkgs <- functionIpkgs) {
+install.pkgs <- function(pkgs) {
   for (pkg in pkgs) {
       if (!suppressWarnings(require(pkg, character.only = TRUE))) {
           install.packages(pkg, repos = "http://cran.fhcrc.org",
