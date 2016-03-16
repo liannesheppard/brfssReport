@@ -41,50 +41,40 @@
 #:-----------------------------------------------------------------------------:
 
 # Clear the workspace, unless you are running in knitr context.
-# See: https://support.rstudio.com/hc/en-us/articles/200552276
-# Example: rmarkdown::render("healthy_sleeping_2014_age5yr.R", "pdf_document")
 if (!isTRUE(getOption('knitr.in.progress'))) {
     closeAllConnections()
     rm(list = ls())
-    gc()
 }
 
-# Function: Install packages (if necessary).
-install.pkgs <- function(pkgs) {
-  for (pkg in pkgs) {
-      if (!suppressWarnings(require(pkg, character.only = TRUE))) {
-          install.packages(pkg, repos = "http://cran.fhcrc.org",
-                           dependencies = TRUE)
-          if (!suppressWarnings(require(pkg, character.only = TRUE))) {
-              stop(paste(c(
-                  "Can't load package: ", pkg, "!"
-              ), sep = ""))
-          }
-      }
-  }
+# Load one or more packages into memory, installing as needed.
+load.pkgs <- function(pkgs, repos = "http://cran.r-project.org") {
+    result <- sapply(pkgs, function(pkg) { 
+        if (!suppressWarnings(require(pkg, character.only = TRUE))) {
+            install.packages(pkg, quiet = TRUE, repos = repos)
+            library(pkg, character.only = TRUE)}})
 }
 
 # Create a vector of package names for the packages we will need.
 pkgs <- c(
-  "foreign",
-  "data.table",
-  "dplyr",
-  "tm",
-  "XML",
-  "epitools",
-  "Hmisc",
-  "sp",
-  "maps",
-  "choroplethrMaps",
-  "choroplethr",
-  "RColorBrewer",
-  "ggplot2",
-  "grid",
-  "gridExtra"
+    "foreign",
+    "data.table",
+    "dplyr",
+    "tm",
+    "XML",
+    "epitools",
+    "Hmisc",
+    "sp",
+    "maps",
+    "choroplethrMaps",
+    "choroplethr",
+    "RColorBrewer",
+    "ggplot2",
+    "grid",
+    "gridExtra"
 )
 
-# Load packages, installing as needed.
-install.pkgs(pkgs)
+# Load the packages, installing as needed.
+load.pkgs(pkgs)
 
 # Create the data folder if it does not already exist.
 data.dir <- "data"
